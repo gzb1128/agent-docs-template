@@ -10,7 +10,7 @@ Plans often link to a design doc in [../design/](../design/), but that is not a 
 
 | Date | Document | Status | Linked Context |
 |------|----------|--------|----------------|
-| 2026-05-28 | [memory-commands.md](2026-05-28-memory-commands.md) | Done | [memory commands design](../design/2026-05-28-memory-commands-design.md) |
+| _none yet — see [../_templates/plan.md](../_templates/plan.md) for the template_ | — | — | — |
 
 ## How to Add a Plan
 
