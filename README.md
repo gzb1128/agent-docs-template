@@ -109,6 +109,43 @@ Treat documentation like code: review it, refactor it, run garbage collection on
 - When you discover an outdated section → fix it the same commit
 - When a doc grows past its complexity tier (see `document-conventions.md`) → split it
 
+## Plugin Marketplace
+
+This repo ships with a Claude Code plugin marketplace at `.claude-plugin/marketplace.json`.
+
+### Versioning: git commit SHA, not semver
+
+All plugins in this marketplace **omit the `version` field** by design. This means Claude Code resolves each plugin's version to the **git commit SHA** of its source — every push to the marketplace repo automatically becomes a new version.
+
+Why:
+
+- **No manual version bumps** — contributors push changes and users get them immediately
+- **Deterministic reproducibility** — each SHA is immutable; the exact code a user ran is always recoverable
+- **Always latest** — `claude plugin update` picks up the newest SHA without waiting for a maintainer to edit a version string
+
+Users run `/plugin update` or let auto-update handle it. There is nothing to tag or release.
+
+### Installation
+
+```bash
+# Add the marketplace (local path, GitHub repo, or git URL)
+claude plugin marketplace add gzb1128/agent-docs-template
+
+# Install a plugin
+claude plugin install example-plugin@agent-docs-plugins
+
+# Update to latest commit
+claude plugin update example-plugin@agent-docs-plugins
+```
+
+### Adding new plugins
+
+1. Create a directory under `plugins/<plugin-name>/`
+2. Add `.claude-plugin/plugin.json` — do **not** set `version`
+3. Add skills, agents, hooks, or MCP servers as needed
+4. Register the plugin in `.claude-plugin/marketplace.json` with `"source": "./plugins/<name>"`
+5. Run `claude plugin validate .` to verify
+
 ## License
 
 Use freely. Adapt to your project's needs.
