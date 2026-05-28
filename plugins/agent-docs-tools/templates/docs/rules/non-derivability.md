@@ -42,7 +42,7 @@ If yes → skip. If no → write it.
 | **troubleshoot/** | Symptoms whose root cause is non-obvious from the error message or stack trace. |
 | **lib/** | Library quirks that bite the team — not features documented in upstream docs. |
 | **design/**, **plans/** | The *decision*, not the implementation. Implementation lives in source + commit messages. The design records why one path was chosen over alternatives — that's the non-derivable artifact. |
-| **AGENTS.md `## Hidden Knowledge`** | The strictest application. See the `/learn` command at [`.agents/commands/learn.md`](../../.agents/commands/learn.md). |
+| **AGENTS.md `## Hidden Knowledge`** | The strictest application. Capture entries only after validation and human approval. |
 
 ## Anti-Staleness Corollary
 
@@ -58,7 +58,7 @@ When you encounter an existing doc entry while working:
 - If it's stale → delete or update it in the same commit
 - If it's now derivable from a newer source → delete and point to the source
 
-The `/remember` command at [`.agents/commands/remember.md`](../../.agents/commands/remember.md) automates this audit on demand.
+Run periodic memory audits to find stale, duplicated, or newly derivable entries.
 
 ## Why This Principle Beats Hard Doc Gates
 

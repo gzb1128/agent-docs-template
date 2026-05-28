@@ -31,7 +31,7 @@ Document depth scales with the module's **consumer count and interface complexit
 |-------------|----------|-------------------|
 | Core | 3+ consumer packages, has state machine, cross-module constraints | ~200-300 lines |
 | Standard | 1-2 consumer packages, no state machine | ~100 lines |
-| Leaf | No internal consumers, self-contained | ≤ 50 lines |
+| Leaf | No internal consumers, self-contained | <= 50 lines |
 
 Quick check: `rg "<package-path>" --glob '*.<ext>' | wc -l`. > 20 references = core; < 5 = leaf.
 
@@ -45,6 +45,6 @@ Quick check: `rg "<package-path>" --glob '*.<ext>' | wc -l`. > 20 references = c
 | Don't | Do |
 |-------|----|
 | Copy function bodies into the codemap | Link to `path/to/file.go:42` |
-| Copy entire YAML configs | Table: file → purpose → key fields |
+| Copy entire YAML configs | Table: file -> purpose -> key fields |
 | Write a tutorial in the codemap | Tutorials go in `docs/runbooks/` or `docs/verify/` |
 | Update only the codemap when source changes | Update both, or just link to source |

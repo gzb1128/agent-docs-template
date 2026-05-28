@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 按照 `docs/design/2026-05-28-memory-commands-design.md` 改进 `.agents/commands/learn.md` 与 `.agents/commands/remember.md`。
+**Goal:** 按照 `docs/design/2026-05-28-memory-commands-design.md` 改进 `plugins/agent-docs-tools/skills/learn/SKILL.md` 与 `plugins/agent-docs-tools/skills/remember/SKILL.md`。
 
 **Architecture:** 只修改两个手动触发命令体，不引入 agent 集成、hook、自动触发、运行时存储、向量数据库或外部记忆系统。`/learn` 负责会话候选记忆的分类、验证、diff 提案和确认后写入；`/remember` 负责 `AGENTS.md` 记忆表面的健康审计和确认后清理。
 
@@ -13,7 +13,7 @@
 ### Task 1: 更新 `/learn` 命令
 
 **Files:**
-- Modify: `.agents/commands/learn.md`
+- Modify: `plugins/agent-docs-tools/skills/learn/SKILL.md`
 
 - [x] **Step 1: 保留手动触发边界**
 
@@ -38,7 +38,7 @@
 ### Task 2: 更新 `/remember` 命令
 
 **Files:**
-- Modify: `.agents/commands/remember.md`
+- Modify: `plugins/agent-docs-tools/skills/remember/SKILL.md`
 
 - [x] **Step 1: 保留报告优先边界**
 
@@ -63,24 +63,24 @@
 ### Task 3: 验证和审查
 
 **Files:**
-- Inspect: `.agents/commands/learn.md`
-- Inspect: `.agents/commands/remember.md`
+- Inspect: `plugins/agent-docs-tools/skills/learn/SKILL.md`
+- Inspect: `plugins/agent-docs-tools/skills/remember/SKILL.md`
 
 - [x] **Step 1: 检查占位符**
 
-Run: `rg -n "TO[D]O|T[B]D|FIX[M]E|\\{\\{" .agents/commands/learn.md .agents/commands/remember.md`
+Run: `rg -n "TO[D]O|T[B]D|FIX[M]E|\\{\\{" plugins/agent-docs-tools/skills/learn/SKILL.md plugins/agent-docs-tools/skills/remember/SKILL.md`
 
 Expected: no output.
 
 - [x] **Step 2: 检查禁止的集成范围**
 
-Run: `rg -n "vector|database|MCP|hook|background|auto-trigger|runtime storage|external memory" .agents/commands/learn.md .agents/commands/remember.md`
+Run: `rg -n "vector|database|MCP|hook|background|auto-trigger|runtime storage|external memory" plugins/agent-docs-tools/skills/learn/SKILL.md plugins/agent-docs-tools/skills/remember/SKILL.md`
 
 Expected: only prohibition text is acceptable; no instruction should add those systems.
 
 - [x] **Step 3: 检查 markdown whitespace**
 
-Run: `git diff --check -- .agents/commands/learn.md .agents/commands/remember.md`
+Run: `git diff --check -- plugins/agent-docs-tools/skills/learn/SKILL.md plugins/agent-docs-tools/skills/remember/SKILL.md`
 
 Expected: no output.
 

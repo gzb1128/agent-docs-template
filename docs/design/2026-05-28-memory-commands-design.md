@@ -6,7 +6,7 @@
 
 ## Problem
 
-当前模板通过 `.agents/commands/learn.md` 和 `.agents/commands/remember.md` 提供记忆能力：`/learn` 在会话结束时沉淀非显性知识，`/remember` 周期性审计已有 `AGENTS.md` 内容。这个方向是正确的，但两个命令的职责边界还不够完整：`/learn` 更偏向“写入”，缺少写入前的结构化提案；`/remember` 更偏向审计 `## Hidden Knowledge`，对 `Quick Reference`、`Key Patterns`、`Golden Rules` 等记忆表面覆盖不足。
+当前插件通过 `plugins/agent-docs-tools/skills/learn/SKILL.md` 和 `plugins/agent-docs-tools/skills/remember/SKILL.md` 提供记忆能力：`/agent-docs-tools:learn` 在会话结束时沉淀非显性知识，`/agent-docs-tools:remember` 周期性审计已有 `AGENTS.md` 内容。这个方向是正确的，但两个命令的职责边界还不够完整：`/agent-docs-tools:learn` 更偏向“写入”，缺少写入前的结构化提案；`/agent-docs-tools:remember` 更偏向审计 `## Hidden Knowledge`，对 `Quick Reference`、`Key Patterns`、`Golden Rules` 等记忆表面覆盖不足。
 
 对比 `claude-md-management` 后，值得吸收的是可审查 diff、质量维度和代码库交叉验证；但不能引入其较宽松的记录标准，否则会削弱本模板的核心优势：严格执行不可推导原则，避免 `AGENTS.md` 变成百科全书。
 
@@ -126,7 +126,7 @@ session context --/learn--> AGENTS.md memory surfaces --/remember--> cleanup pro
 - 用一个包含可推导、不可推导、重复和无法验证候选项的会话样例手动演练 `/learn` 分类。
 - 检查命令体是否仍然明确要求手动触发，且没有暗示自动集成。
 - 检查所有新增说明是否遵守不可推导原则，没有鼓励把代码结构复制进 `AGENTS.md`。
-- 检查实现 diff 是否只修改 `.agents/commands/learn.md` 和 `.agents/commands/remember.md`，除非用户另行批准文档索引或说明文件更新。
+- 检查实现 diff 是否只修改 `plugins/agent-docs-tools/skills/learn/SKILL.md` 和 `plugins/agent-docs-tools/skills/remember/SKILL.md`，除非用户另行批准文档索引或说明文件更新。
 - 检查两个命令是否都明确禁止 agent 集成、hook、自动触发、运行时存储、向量数据库或外部记忆系统。
 - 检查 `/remember` 是否保持报告优先，且没有在用户确认前编辑文件。
 
@@ -140,8 +140,8 @@ session context --/learn--> AGENTS.md memory surfaces --/remember--> cleanup pro
 
 ## Migration / Rollout
 
-1. 更新 `.agents/commands/learn.md`，加入分类表、验证证据、diff 提案和用户确认步骤。
-2. 更新 `.agents/commands/remember.md`，把审计范围扩展到所有 `AGENTS.md` 记忆表面，并输出 `Memory Health Report`。
+1. 更新 `plugins/agent-docs-tools/skills/learn/SKILL.md`，加入分类表、验证证据、diff 提案和用户确认步骤。
+2. 更新 `plugins/agent-docs-tools/skills/remember/SKILL.md`，把审计范围扩展到所有 `AGENTS.md` 记忆表面，并输出 `Memory Health Report`。
 3. 实现阶段默认只触碰上述两个命令文件；任何说明文件、索引或规则文档更新都需要单独确认。
 
 ## Open Questions
@@ -152,7 +152,7 @@ session context --/learn--> AGENTS.md memory surfaces --/remember--> cleanup pro
 
 ## Related
 
-- Command: `.agents/commands/learn.md`
-- Command: `.agents/commands/remember.md`
+- Skill: `plugins/agent-docs-tools/skills/learn/SKILL.md`
+- Skill: `plugins/agent-docs-tools/skills/remember/SKILL.md`
 - Rule: `docs/rules/non-derivability.md`
 - Rule: `docs/rules/document-conventions.md`

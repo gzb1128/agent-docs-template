@@ -1,6 +1,6 @@
 ---
 name: bootstrap-agent-docs
-description: Use when bootstrapping a repository to follow Agent-First documentation practices (OpenAI Harness Engineering), when the user says "bootstrap agent docs", "init agent docs", "apply our doc baseline", "scaffold AGENTS.md", or when an existing repo lacks a structured docs/ directory, root AGENTS.md table-of-contents, or .agents/skills/ scaffolding
+description: Use when bootstrapping a repository to follow Agent-First documentation practices (OpenAI Harness Engineering), when the user says "bootstrap agent docs", "init agent docs", "apply our doc baseline", "scaffold AGENTS.md", or when an existing repo lacks a structured docs/ directory or root AGENTS.md table-of-contents
 ---
 
 # Bootstrap Agent-First Documentation
@@ -11,20 +11,14 @@ Scaffold a repository's documentation structure to follow **Agent-First Engineer
 
 **Core principle:** Scaffold the structure, do NOT auto-generate content that will rot. Agents and humans fill in content iteratively as the project evolves.
 
-**Reference template:** The template repo this skill ships inside. Resolve its path in this order:
-
-1. `$AGENT_DOCS_TEMPLATE` env var, if set
-2. `~/code/agent-docs-template/`, if it exists
-3. Ask the user
-
-Bind this to `$TEMPLATE_DIR` once at the start of the run and use `$TEMPLATE_DIR` in every later command. The example commands below assume `$TEMPLATE_DIR` is already exported.
+**Template source:** This skill ships its template tree alongside itself in the plugin. The templates live at `${CLAUDE_PLUGIN_ROOT}/templates/` once the plugin is installed. Bind it once at the start of the run:
 
 ```bash
-TEMPLATE_DIR="${AGENT_DOCS_TEMPLATE:-$HOME/code/agent-docs-template}"
-[ -d "$TEMPLATE_DIR" ] || { echo "Template not found at $TEMPLATE_DIR — set AGENT_DOCS_TEMPLATE"; exit 1; }
+TEMPLATE_DIR="${CLAUDE_PLUGIN_ROOT}/templates"
+[ -d "$TEMPLATE_DIR" ] || { echo "Template dir not found at $TEMPLATE_DIR — plugin may be corrupted"; exit 1; }
 ```
 
-> **Installing this skill in a target repo:** This skill lives at `.agents/skills/bootstrap-agent-docs/` in the template repo. The simplest install is just running the rsync command in Step 4 — `.agents/skills/` is included in the copy, so once you bootstrap a target repo, the skill (and the `clean-commit` skill) travel along automatically. For a one-shot run without persisting the skill, you can invoke it directly by pointing your agent at `$TEMPLATE_DIR/.agents/skills/bootstrap-agent-docs/SKILL.md`.
+`${CLAUDE_PLUGIN_ROOT}` is set by Claude Code automatically when this plugin is enabled. If you are running this skill outside of a plugin install (e.g., from a cloned source tree), set `CLAUDE_PLUGIN_ROOT` to the path containing `templates/`.
 
 ## When to Use
 
@@ -96,31 +90,24 @@ Will create in <target>:
 - docs/rules/{INDEX,non-derivability,document-conventions,openai-harness-engineering}.md
 - docs/{troubleshoot,runbooks,lib,verify,design,plans}/INDEX.md
 - docs/_templates/{codemap,design,plan,subpackage-AGENTS}.md
-- .agents/skills/{bootstrap-agent-docs,clean-commit}/SKILL.md
-- .agents/commands/{README,learn,remember}.md  (manual-trigger; wire into your /command system)
-- .gitignore (only if missing)
 ```
 
 Get user approval before creating files.
 
 ### Step 4: Copy Template Tree
 
-Source: `$TEMPLATE_DIR` (resolved in Overview).
+Source: `$TEMPLATE_DIR` (resolved in Overview — `${CLAUDE_PLUGIN_ROOT}/templates/`).
 
-Both strategies below use `--ignore-existing` so the target's `.gitignore`, `AGENTS.md`, or any pre-existing file is never overwritten. The README.md of the template is for the template repo itself and is excluded.
+Both strategies below use `--ignore-existing` so the target's `.gitignore`, `AGENTS.md`, or any pre-existing file is never overwritten.
 
 **Strategy A — fresh repo (no existing AGENTS.md/docs):**
 ```bash
-rsync -av --ignore-existing \
-  --exclude='.git/' --exclude='README.md' \
-  "$TEMPLATE_DIR/" <target>/
+rsync -av --ignore-existing "$TEMPLATE_DIR/" <target>/
 ```
 
 **Strategy B — existing repo (merge, never overwrite):**
 ```bash
-rsync -av --ignore-existing \
-  --exclude='.git/' --exclude='README.md' \
-  "$TEMPLATE_DIR/" <target>/
+rsync -av --ignore-existing "$TEMPLATE_DIR/" <target>/
 # Then list what's new and what was skipped:
 cd <target> && git status
 ```
@@ -166,9 +153,12 @@ Print this for the user (the agent is done; the user/agent iterates from here):
 Bootstrap complete. Next steps for you/the agent:
 
 1. Fill placeholders in AGENTS.md (search for "TODO:" markers)
-2. Wire up the manual-trigger commands at .agents/commands/ into your agent's
-   command system (e.g., symlink to .opencode/command/ or .claude/commands/).
-   See .agents/commands/README.md for the rationale and per-agent setup.
+2. (Optional) Use the agent-docs-tools manual skills for ongoing memory maintenance:
+   /agent-docs-tools:learn
+   /agent-docs-tools:remember
+   If this repo was scaffolded without the plugin installed, install it first:
+   claude plugin marketplace add gzb1128/agent-docs-template
+   claude plugin install agent-docs-tools@agent-docs-plugins
 3. If useful, write your first code map: docs/codemaps/<component>.md
    - Apply the non-derivability principle (docs/rules/non-derivability.md)
    - Use the "map, not encyclopedia" pattern (docs/rules/openai-harness-engineering.md)
@@ -182,7 +172,7 @@ Bootstrap complete. Next steps for you/the agent:
 
 | Action | Where |
 |--------|-------|
-| Template source | `$TEMPLATE_DIR` (default `~/code/agent-docs-template/`, override with `$AGENT_DOCS_TEMPLATE`) |
+| Template source | `${CLAUDE_PLUGIN_ROOT}/templates/` (set automatically when plugin is enabled) |
 | Root AGENTS.md placeholder list | `$TEMPLATE_DIR/AGENTS.md` (grep for `{{`) |
 | Sub-package AGENTS.md template | `$TEMPLATE_DIR/docs/_templates/subpackage-AGENTS.md` |
 | OpenAI Harness reference | `$TEMPLATE_DIR/docs/rules/openai-harness-engineering.md` |

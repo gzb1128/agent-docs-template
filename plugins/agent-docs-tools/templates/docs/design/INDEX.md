@@ -12,7 +12,7 @@ If you're looking for **how a design was executed**, see [../plans/INDEX.md](../
 
 | Date | Document | Topic | When to Read |
 |------|----------|-------|--------------|
-| 2026-05-28 | [memory-commands-design.md](2026-05-28-memory-commands-design.md) | `/learn` 与 `/remember` 记忆命令改进 | 修改记忆捕获、分类、验证或 `AGENTS.md` 审计行为时阅读 |
+| _none yet — see [../_templates/design.md](../_templates/design.md) for the template_ | — | — | — |
 
 ## How to Add a Design Doc
 
