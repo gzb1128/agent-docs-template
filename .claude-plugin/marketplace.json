@@ -1,8 +1,7 @@
 {
   "name": "agent-docs-plugins",
   "owner": {
-    "name": "Agent Docs Team",
-    "email": "team@example.com"
+    "name": "Agent Docs Team"
   },
   "plugins": [
     {

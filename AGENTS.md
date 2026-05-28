@@ -1,138 +1,89 @@
-# {{PROJECT_NAME}}
+# agent-docs-template
 
-> **Agent-First Engineering**: This repository follows [OpenAI Harness Engineering](docs/rules/openai-harness-engineering.md) — 
-> "Human at the helm. Agents execute." The knowledge base is structured for agent readability with progressive disclosure.
+> **Agent-First Engineering**: This repository follows [OpenAI Harness Engineering](plugins/agent-docs-tools/templates/docs/rules/openai-harness-engineering.md) —
+> "Human at the helm. Agents execute."
 
-This file is the entry point for any AI coding agent working in this repository.
-For deeper context, follow the links — don't try to absorb everything upfront.
+This repo hosts the `agent-docs-tools` Claude Code plugin and its template payload. The plugin scaffolds Agent-First documentation into any target repo via `claude plugin install`.
+
+## What's here
+
+| Path | Purpose |
+|------|---------|
+| `.claude-plugin/marketplace.json` | Marketplace catalog (`agent-docs-plugins`) |
+| `plugins/agent-docs-tools/` | The single distributable plugin |
+| `plugins/agent-docs-tools/skills/` | 4 skills: `bootstrap-agent-docs`, `clean-commit`, `learn`, `remember` |
+| `plugins/agent-docs-tools/templates/` | Template payload rsynced by the `bootstrap-agent-docs` skill |
+| `docs/design/`, `docs/plans/` | Design docs and plans for THIS repo's evolution |
+| `README.md` | User-facing install + usage guide |
 
 ## Quick Reference
 
 | Action | Command |
 |--------|---------|
-| Build | `{{BUILD_COMMAND}}` <!-- TODO: e.g., `make all`, `npm run build`, `cargo build` --> |
-| Test | `{{TEST_COMMAND}}` <!-- TODO: e.g., `go test ./...`, `npm test`, `pytest` --> |
-| Lint | `{{LINT_COMMAND}}` <!-- TODO: e.g., `golangci-lint run ./...`, `npm run lint` --> |
-| Run locally | `{{RUN_COMMAND}}` <!-- TODO --> |
-| Generate code | `{{CODEGEN_COMMAND}}` <!-- TODO: optional, delete this row if N/A --> |
-| Clean | `{{CLEAN_COMMAND}}` <!-- TODO: optional, delete this row if N/A --> |
-
-## Architecture
-
-<!-- TODO: 1-3 sentences describing what this project IS and the main components.
-     Example:
-     Three components, one repo:
-     - **api-server** (`cmd/api/main.go`) — HTTP API server
-     - **worker** (`cmd/worker/main.go`) — Async job executor
-     - **cli** (`cmd/cli/main.go`) — Command-line tool
--->
-{{ARCHITECTURE_SUMMARY}}
-
-## Common Tasks
-
-| I want to... | Start here |
-|---|---|
-| Add/modify a plugin | `plugins/<name>/` — see Plugin Marketplace section below |
-| Validate marketplace or plugin | `claude plugin validate .` (marketplace) / `claude plugin validate ./plugins/<name>` (plugin) |
-| Test plugin install locally | `claude plugin marketplace add <repo-path>` then `claude plugin install <name>@agent-docs-plugins` |
-| Add/modify an API endpoint | [codemaps/INDEX.md](docs/codemaps/INDEX.md) <!-- TODO: replace with API codemap if useful --> |
-| Change database schema | [codemaps/INDEX.md](docs/codemaps/INDEX.md) <!-- TODO: replace with database codemap if useful --> |
-| Understand the build/deploy flow | [codemaps/INDEX.md](docs/codemaps/INDEX.md) <!-- TODO: replace with build/deploy codemap if useful --> |
-| Troubleshoot a system issue | [troubleshoot/INDEX.md](docs/troubleshoot/INDEX.md) |
-| Run an operational procedure | [runbooks/INDEX.md](docs/runbooks/INDEX.md) |
-| Use a third-party library | [lib/INDEX.md](docs/lib/INDEX.md) |
-| Verify system behavior (dry-run) | [verify/INDEX.md](docs/verify/INDEX.md) |
-| Look up a coding standard | [rules/INDEX.md](docs/rules/INDEX.md) |
-| Find an architecture map | [codemaps/INDEX.md](docs/codemaps/INDEX.md) |
-
-**More**: [Code map index](docs/codemaps/INDEX.md) | [Coding rules](docs/rules/INDEX.md) | [Troubleshoot](docs/troubleshoot/INDEX.md) | [Runbooks](docs/runbooks/INDEX.md) | [Library refs](docs/lib/INDEX.md) | [Design docs](docs/design/INDEX.md) | [Plans](docs/plans/INDEX.md) | [Verify index](docs/verify/INDEX.md) | [Doc templates](docs/_templates/)
-
-## Key Patterns
-
-<!-- TODO: 3-5 bullets describing the dominant patterns/conventions of this codebase.
-     Examples:
-     - **Generated code**: Edit source definitions, regenerate outputs — never hand-edit generated files
-     - **DI**: Uber FX (runtime), Wire (compile-time)
-     - **Tests next to source**: `_test.go` lives with the file it tests
--->
-
-## Golden Rules
-
-<!-- TODO: 3-7 hard rules that must NOT be broken. These are the rules that agents
-     are most likely to violate without explicit reminders. -->
-1. Never hand-edit generated code — regenerate
-2. Tests live next to source
-3. Follow existing patterns before inventing new ones
-4. Update the relevant codemap/INDEX when you add new modules
-
-## Document Creation Rules
-
-> ⚠️ **CRITICAL**: Before creating ANY documentation, read [docs/rules/non-derivability.md](docs/rules/non-derivability.md), [docs/rules/document-conventions.md](docs/rules/document-conventions.md), and [docs/rules/openai-harness-engineering.md](docs/rules/openai-harness-engineering.md).
-
-**Anti-Patterns (RED):**
-- Copying code/config into documentation
-- Writing detailed procedures in INDEX files (INDEX = table of links, not tutorial)
-
-**Correct Pattern (GREEN):**
-- Use tables to map concepts → file paths
-- Link to source files instead of copying content
-- Record only what cannot be derived from code, git history, or existing docs
-- INDEX files: ~30 lines of tables + quick navigation
-
-## Development Workflow
-
-1. Make changes
-2. Run `{{LINT_COMMAND}}` on affected package — fix lint errors <!-- TODO -->
-3. Run `{{TEST_COMMAND}}` on affected package first <!-- TODO -->
-4. Update relevant docs (codemap, INDEX) if structure changed
-5. Commit with a message that explains WHY (business impact), not WHAT (code change)
+| Validate marketplace | `claude plugin validate .` |
+| Validate plugin | `claude plugin validate ./plugins/agent-docs-tools` |
+| Smoke-test install (local path) | `claude plugin marketplace add $(pwd)` then `claude plugin install agent-docs-tools@agent-docs-plugins` |
+| Inspect installed plugin | `claude plugin list --json \| jq '.[] \| select(.id\|contains("agent-docs-tools"))'` |
 
 ## Plugin Marketplace
 
-This repo ships with a Claude Code plugin marketplace at `.claude-plugin/marketplace.json`. Plugins live under `plugins/`.
+This repo IS the marketplace. The `.claude-plugin/marketplace.json` lists one plugin: `agent-docs-tools`.
 
 ### Versioning: git commit SHA, not semver
 
-All plugins **omit the `version` field** by design. Claude Code resolves each plugin's version to the git commit SHA — every push to this repo automatically becomes a new version. No manual bumps, no release tags.
+The plugin **omits the `version` field** by design. Claude Code resolves the plugin's version to the git commit SHA — every push to this repo automatically becomes a new version. No manual bumps, no release tags.
+
+> `claude plugin validate` warns `No version specified` and `No marketplace description provided` — both are **expected and intentional**, not errors. Validation passes.
 
 ### Local verification workflow
 
-After modifying a plugin, always verify before committing:
+After modifying any file under `plugins/agent-docs-tools/`, always verify before committing:
 
 ```bash
 # 1. Validate the marketplace catalog
 claude plugin validate .
 
-# 2. Validate the individual plugin (checks plugin.json + skills frontmatter)
-claude plugin validate ./plugins/<name>
+# 2. Validate the plugin (checks plugin.json + SKILL.md frontmatter)
+claude plugin validate ./plugins/agent-docs-tools
 
-# 3. (Optional) Smoke-test install from local path
-claude plugin marketplace add /path/to/this/repo
-claude plugin install <name>@agent-docs-plugins
-claude plugin list --json   # confirm enabled + correct version
+# 3. Smoke-test install from the LOCAL working tree (tests uncommitted changes)
+claude plugin marketplace add "$(pwd)"
+claude plugin install agent-docs-tools@agent-docs-plugins
+claude plugin list --json | jq '.[] | select(.id|contains("agent-docs-tools"))'
 ```
 
-`claude plugin validate` checks: JSON schema, duplicate plugin names, source path traversal, skill/agent/command frontmatter parsing. It does **not** check hook safety or MCP reachability — those require the full `scan-plugins` CI pipeline.
+**Local path vs GitHub form:** `claude plugin marketplace add "$(pwd)"` reads from your working tree (good for pre-commit smoke tests). `claude plugin marketplace add gzb1128/agent-docs-template` fetches the latest pushed commit from GitHub (good for end-user simulation, won't see uncommitted changes).
 
-### Adding a new plugin
+`claude plugin validate` checks: JSON schema, duplicate plugin names, source path traversal, SKILL.md frontmatter parsing. It does **not** check hook safety, MCP reachability, or skill behavior — those need the upstream `scan-plugins` CI pipeline or manual testing.
 
-1. Create `plugins/<name>/` with `.claude-plugin/plugin.json` (no `version` field)
-2. Add skills as `skills/<skill-name>/SKILL.md` directories
-3. Register in `.claude-plugin/marketplace.json` with `"source": "./plugins/<name>"`
-4. Run `claude plugin validate .` and `claude plugin validate ./plugins/<name>`
-5. Commit
+### Editing a skill
 
-## Sub-Package Rules
+1. Edit `plugins/agent-docs-tools/skills/<name>/SKILL.md` — the plugin is the only source
+2. Run `claude plugin validate ./plugins/agent-docs-tools`
+3. Re-install locally and confirm new SHA: `claude plugin install agent-docs-tools@agent-docs-plugins`
+4. Commit with a message explaining WHY the skill changed (business impact)
 
-<!-- TODO: Add rows for any sub-package with its own AGENTS.md (complex modules
-     with state machines, cross-module constraints, etc.). Leave empty if none. -->
+### Editing the template payload
 
-| Module | Rules Doc | Reason |
-|--------|-----------|--------|
-| _none yet_ | — | — |
+1. Edit `plugins/agent-docs-tools/templates/<path>` — that's the rsync source for `bootstrap-agent-docs`
+2. Re-run a bootstrap against a throwaway target dir to verify the change lands as intended:
+   ```bash
+   TMP=$(mktemp -d) && cd "$TMP" && git init -q
+   rsync -av --ignore-existing /path/to/agent-docs-template/plugins/agent-docs-tools/templates/ ./
+   git status   # inspect what landed
+   ```
+3. Commit
 
-See [docs/rules/document-conventions.md](docs/rules/document-conventions.md) for when to add a sub-package AGENTS.md.
+## Hidden Knowledge
 
-## Verification
+- **`bootstrap-agent-docs` resolves templates from `${CLAUDE_PLUGIN_ROOT}/templates/`** — that env var is set automatically by Claude Code when the plugin is enabled. Do NOT reference templates by repo-relative paths; the plugin is installed into `~/.claude/plugins/cache/...` and cannot see this repo's working tree.
+- **Plugin install copies into cache, paths outside `plugins/agent-docs-tools/` are invisible** — never write a skill that does `../../something`; pack everything the skill needs into `plugins/agent-docs-tools/`.
+- **No `version` field is intentional** — adding one pins the plugin and breaks the "every push is a new version" guarantee.
 
-Verify system behavior via [docs/verify/INDEX.md](docs/verify/INDEX.md). Prefer dry-run modes.
+## Development Workflow
+
+1. Edit under `plugins/agent-docs-tools/` (skills or templates)
+2. Run `claude plugin validate .` and `claude plugin validate ./plugins/agent-docs-tools`
+3. Smoke-test install locally (see Local verification workflow above)
+4. Commit with a message that explains WHY (business impact), not WHAT (code change)
+5. Push — every push is a new plugin version (SHA-based)

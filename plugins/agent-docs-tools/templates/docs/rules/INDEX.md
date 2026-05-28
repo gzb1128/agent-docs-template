@@ -10,14 +10,14 @@ Coding standards and best practices. Each rule has a **"When to Use"** trigger s
 | [Document Conventions](document-conventions.md) | Documentation tree, naming rules, when to add a sub-package `AGENTS.md` | Creating/refactoring any file under `docs/` |
 | [OpenAI Harness Engineering](openai-harness-engineering.md) | Agent-First engineering practices: progressive disclosure, documentation organization | Reviewing the overall doc philosophy; auditing codemaps / `AGENTS.md` files |
 
-## Related Commands
+## Related Skills
 
-The [`.agents/commands/`](../../.agents/commands/) directory ships two manual-trigger commands that operationalize the non-derivability principle:
+If you have installed the `agent-docs-tools` plugin (`claude plugin install agent-docs-tools@agent-docs-plugins`), two skills operationalize the non-derivability principle:
 
-- `/learn` — persist non-obvious session insights into the right `AGENTS.md`
-- `/remember` — audit existing `## Hidden Knowledge` for staleness and duplication
+- `/agent-docs-tools:learn` — persist non-obvious session insights into the right `AGENTS.md`
+- `/agent-docs-tools:remember` — audit existing `## Hidden Knowledge` for staleness and duplication
 
-See [`.agents/commands/README.md`](../../.agents/commands/README.md) for why they're commands (not skills) and how to wire them into your agent.
+Both are manual-trigger (not auto-invoked by the model) — invoke them deliberately at the end of a session.
 
 <!-- TODO: Add project-specific rules below. Examples:
 | Go Coding Standards | Error handling, Context usage, interface design | Writing/reviewing Go code |

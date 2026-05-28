@@ -1,52 +1,43 @@
-# Agent Docs Template
+# agent-docs-template
 
-A ready-to-use baseline for **Agent-First documentation** in any repository, based on [OpenAI Harness Engineering](https://openai.com/index/harness-engineering/) practices.
+A Claude Code plugin (`agent-docs-tools`) that scaffolds **Agent-First documentation** into any repository, based on [OpenAI Harness Engineering](https://openai.com/index/harness-engineering/) practices.
 
 **Core idea:** Human at the helm. Agents execute. The repo is the system of record — knowledge is structured for agent readability with progressive disclosure.
 
 ## Quick Start
 
-### Option 1: Use the bundled `bootstrap-agent-docs` skill (recommended)
-
-This template ships with a skill at `.agents/skills/bootstrap-agent-docs/SKILL.md` that scaffolds any repo to follow these practices.
-
-Point your agent at the skill and ask:
-
-> "Bootstrap agent docs for this repo using the bootstrap-agent-docs skill at `$AGENT_DOCS_TEMPLATE/.agents/skills/bootstrap-agent-docs/SKILL.md` (defaults to `~/code/agent-docs-template/`)."
-
-The skill detects your project's language/build system, copies this template, and fills in placeholders interactively. The `.agents/skills/` directory is copied along with the template, so the skill and the bundled `clean-commit` skill become available in the target repo automatically.
-
-### Option 2: Manual copy
-
 ```bash
-# In your target repo root. --ignore-existing ensures we never overwrite
-# anything you already have (AGENTS.md, .gitignore, etc.).
-# Override the template path via $AGENT_DOCS_TEMPLATE if it lives elsewhere.
-TEMPLATE_DIR="${AGENT_DOCS_TEMPLATE:-$HOME/code/agent-docs-template}"
-rsync -av --ignore-existing --exclude='.git/' --exclude='README.md' \
-  "$TEMPLATE_DIR/" ./
+# 1. Add this marketplace
+claude plugin marketplace add gzb1128/agent-docs-template
 
-# See what was created vs skipped
-git status
+# 2. Install the plugin
+claude plugin install agent-docs-tools@agent-docs-plugins
 
-# Then search for {{...}} placeholders and TODO markers in AGENTS.md and fill them in
-grep -rn '{{' AGENTS.md docs/
-grep -rn 'TODO:' AGENTS.md docs/
+# 3. In your target repo, ask Claude:
+#    "bootstrap agent docs"
+#    The bootstrap-agent-docs skill takes over from there.
 ```
 
-## What You Get
+Updates land automatically — the plugin is pinned to git commit SHA, every push is a new version. Run `claude plugin update agent-docs-tools@agent-docs-plugins` (or wait for auto-update) to pull the latest.
+
+## What the plugin ships
+
+| Skill | Type | Purpose |
+|---|---|---|
+| `bootstrap-agent-docs` | model-invoked | Scaffold `AGENTS.md`, `docs/_templates/`, `docs/rules/`, and per-category INDEX files into a target repo |
+| `clean-commit` | model-invoked | Run quality gates (lint/test/typecheck) before committing, with messages that explain WHY |
+| `learn` | slash command | Persist non-obvious session insights to the right `AGENTS.md` (verified, approval-gated) |
+| `remember` | slash command | Audit `AGENTS.md` knowledge for staleness, duplication, and misplacement |
+
+The template payload that `bootstrap-agent-docs` rsyncs lives inside the plugin at `plugins/agent-docs-tools/templates/` and resolves at runtime via `${CLAUDE_PLUGIN_ROOT}/templates/`. No separate repo clone needed.
+
+## What gets scaffolded
+
+When you ask Claude to "bootstrap agent docs" in a target repo, the plugin creates:
 
 ```
 your-repo/
 ├── AGENTS.md                          # ~100-line table of contents (root entry for agents)
-├── .agents/
-│   ├── skills/
-│   │   ├── bootstrap-agent-docs/SKILL.md  # The skill that scaffolds this structure into other repos
-│   │   └── clean-commit/SKILL.md          # Starter skill: enforce quality gates before commit
-│   └── commands/                          # Manual-trigger commands (NOT skills — wire into /command yourself)
-│       ├── README.md                      # Why they're commands, how to wire them up
-│       ├── learn.md                       # Persist non-obvious insights to AGENTS.md
-│       └── remember.md                    # Audit existing AGENTS.md for stale/duplicate knowledge
 └── docs/
     ├── codemaps/INDEX.md              # Architecture maps (concept → file path)
     ├── design/INDEX.md                # Design specs: YYYY-MM-DD-<topic>-design.md
@@ -79,97 +70,18 @@ your-repo/
 | **Sub-package AGENTS.md** | Add one only for modules with state machines, cross-cutting constraints, or high complexity. |
 | **Date-prefixed designs/plans** | `YYYY-MM-DD-<topic>-design.md` keeps history browsable in chronological order. |
 
-## Filling in the Template
-
-After copying, these are useful next steps:
-
-1. **Replace `{{PROJECT_NAME}}`, `{{BUILD_COMMAND}}`, etc.** in `AGENTS.md` (grep for `{{`)
-2. **Fill `TODO:` markers** in `AGENTS.md` (grep for `TODO:`)
-3. **If navigation is non-obvious, write a codemap** under `docs/codemaps/<component>.md` using `docs/_templates/codemap.md`. Update `docs/codemaps/INDEX.md` to link it.
-4. **Add project-specific rules** under `docs/rules/`. Update `docs/rules/INDEX.md`.
-5. **Commit the baseline:**
-   ```bash
-   git add . && git commit -m "docs: bootstrap agent-first documentation baseline"
-   ```
-
 ## Why This Structure?
 
-Read [docs/rules/openai-harness-engineering.md](docs/rules/openai-harness-engineering.md) for the full rationale. The short version:
+Read [`openai-harness-engineering.md`](plugins/agent-docs-tools/templates/docs/rules/openai-harness-engineering.md) for the full rationale. The short version:
 
 - **Context is scarce.** A 1000-line AGENTS.md crowds out the actual task. Keep it ~100 lines.
 - **All guidance becomes noise.** If everything is "important", nothing is. Be selective.
 - **Stale docs rot.** Copy-pasted code/config in docs goes out of date in days. Link to source.
 - **Agents need triggers.** "When to use" columns let agents pick the right doc without reading them all.
 
-## Maintenance
+## Contributing
 
-Treat documentation like code: review it, refactor it, run garbage collection on it.
-
-- When you add a module → update the relevant INDEX and codemap
-- When you discover an outdated section → fix it the same commit
-- When a doc grows past its complexity tier (see `document-conventions.md`) → split it
-
-## Plugin Marketplace
-
-This repo ships with a Claude Code plugin marketplace at `.claude-plugin/marketplace.json`.
-
-### Versioning: git commit SHA, not semver
-
-All plugins in this marketplace **omit the `version` field** by design. This means Claude Code resolves each plugin's version to the **git commit SHA** of its source — every push to the marketplace repo automatically becomes a new version.
-
-Why:
-
-- **No manual version bumps** — contributors push changes and users get them immediately
-- **Deterministic reproducibility** — each SHA is immutable; the exact code a user ran is always recoverable
-- **Always latest** — `claude plugin update` picks up the newest SHA without waiting for a maintainer to edit a version string
-
-Users run `/plugin update` or let auto-update handle it. There is nothing to tag or release.
-
-### Available Plugins
-
-#### agent-docs-tools
-
-Skills and commands for Agent-First documentation workflows:
-
-| Skill | Type | Description |
-|---|---|---|
-| `bootstrap-agent-docs` | model-invoked | Scaffold a repo with AGENTS.md, docs/, and agent skills |
-| `clean-commit` | model-invoked | Run quality gates before committing with impact-scoped messages |
-| `learn` | slash command | Persist non-obvious session insights to AGENTS.md |
-| `remember` | slash command | Audit and reorganize AGENTS.md knowledge for staleness/duplication |
-
-### Installation
-
-```bash
-# Add the marketplace (local path, GitHub repo, or git URL)
-claude plugin marketplace add gzb1128/agent-docs-template
-
-# Install the plugin
-claude plugin install agent-docs-tools@agent-docs-plugins
-
-# Update to latest commit
-claude plugin update agent-docs-tools@agent-docs-plugins
-```
-
-### Local verification
-
-After modifying a plugin, validate before committing:
-
-```bash
-# Validate the marketplace catalog
-claude plugin validate .
-
-# Validate a specific plugin (checks plugin.json + skill frontmatter)
-claude plugin validate ./plugins/<name>
-```
-
-### Adding new plugins
-
-1. Create a directory under `plugins/<plugin-name>/`
-2. Add `.claude-plugin/plugin.json` — do **not** set `version`
-3. Add skills, agents, hooks, or MCP servers as needed
-4. Register the plugin in `.claude-plugin/marketplace.json` with `"source": "./plugins/<name>"`
-5. Run `claude plugin validate .` to verify
+This repo is both the marketplace and the plugin source. See [AGENTS.md](AGENTS.md) for the development workflow, local verification commands (`claude plugin validate`), and SHA-based versioning policy.
 
 ## License
 
