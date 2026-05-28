@@ -6,13 +6,15 @@ A ready-to-use baseline for **Agent-First documentation** in any repository, bas
 
 ## Quick Start
 
-### Option 1: Use the `bootstrap-agent-docs` skill (recommended)
+### Option 1: Use the bundled `bootstrap-agent-docs` skill (recommended)
 
-If you have the `bootstrap-agent-docs` opencode skill installed (typically at `~/.config/opencode/skill/bootstrap-agent-docs/SKILL.md`), just ask your agent:
+This template ships with a skill at `.agents/skills/bootstrap-agent-docs/SKILL.md` that scaffolds any repo to follow these practices.
 
-> "Bootstrap agent docs for this repo."
+Point your agent at the skill and ask:
 
-The skill detects your project's language/build system, copies this template, and fills in placeholders interactively.
+> "Bootstrap agent docs for this repo using the bootstrap-agent-docs skill at `~/code/agent-docs-template/.agents/skills/bootstrap-agent-docs/SKILL.md`."
+
+The skill detects your project's language/build system, copies this template, and fills in placeholders interactively. The `.agents/skills/` directory is copied along with the template, so the skill and the bundled `clean-commit` skill become available in the target repo automatically.
 
 ### Option 2: Manual copy
 
@@ -36,6 +38,7 @@ grep -rn 'TODO:' AGENTS.md docs/
 your-repo/
 ├── AGENTS.md                          # ~100-line table of contents (root entry for agents)
 ├── .agents/skills/
+│   ├── bootstrap-agent-docs/SKILL.md  # The skill that scaffolds this structure into other repos
 │   └── clean-commit/SKILL.md          # Starter skill: enforce quality gates before commit
 └── docs/
     ├── codemaps/INDEX.md              # Architecture maps (concept → file path)
