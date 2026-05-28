@@ -1,108 +1,159 @@
 ---
-description: Audit and reorganize AGENTS.md knowledge — deduplicate, promote, and clean up
+description: Audit AGENTS.md memory health - report stale, duplicated, misplaced, or low-signal entries
 ---
 
-> **Manual-trigger command.** This file is intentionally NOT a skill — keeping
-> it out of the auto-loaded skill set prevents the model from running audits
-> mid-task. Wire it into your agent as a slash command (e.g., `/remember`) and
-> invoke it deliberately when you want to clean up. See
-> `.agents/commands/README.md` for setup.
+> **Manual-trigger command.** This file is intentionally NOT a skill. Keeping it
+> out of the auto-loaded skill set prevents the model from running memory audits
+> mid-task. Wire it into your command system as a slash command (for example,
+> `/remember`) and invoke it deliberately when you want to clean up. Do not add
+> hooks, background tasks, auto-trigger behavior, runtime storage, vector
+> databases, MCP integration, or external memory systems.
 
-Review all AGENTS.md files across the project and produce a structured cleanup report. Do NOT apply changes — present proposals for user approval.
+Review all `AGENTS.md` files across the project and produce a structured
+`Memory Health Report`. Default behavior is report-only. Do not edit files until
+the user has reviewed the proposals and explicitly approved the changes.
 
 ## What this does
 
 This is the complement to `/learn`:
-- `/learn` writes new knowledge into AGENTS.md
-- `/remember` audits existing knowledge for staleness, duplication, and misplacement
 
-## Step 1: Gather all knowledge layers
+- `/learn` proposes verified memory additions from the current session.
+- `/remember` audits existing `AGENTS.md` memory surfaces for staleness,
+  duplication, misplacement, and low-signal content.
 
-Read all AGENTS.md files in the project. Example layout:
+## Step 1: Gather memory layers
 
-```
+Read all project `AGENTS.md` files. Typical layers include:
+
+```text
 AGENTS.md
 internal/<package>/AGENTS.md
 <other-package>/AGENTS.md
 ```
 
-Also read your personal preferences file (e.g., `~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`) if it exists.
+Do not read or modify personal preference files such as `~/.claude/CLAUDE.md` or
+`~/.config/opencode/AGENTS.md` from this command. This command audits project
+memory only.
 
-## Step 2: Classify each insight
+## Step 2: Audit memory surfaces
 
-For each `## Hidden Knowledge` entry found, determine the best destination:
+Audit every relevant `AGENTS.md` memory surface, not only `## Hidden Knowledge`.
 
-| Destination | What belongs here | Examples |
-|---|---|---|
-| **Root AGENTS.md** (promote) | Project-wide conventions every contributor must know | "schema changes require code generation before build" |
-| **Package AGENTS.md** (keep) | Package-specific quirks only relevant to that module | "state constants must match controller types" |
-| **Delete** (stale) | Information that is no longer true or now derivable | Function renamed, file removed, workaround fixed |
-| **No action** | Still valid and in the right place | — |
+| Surface | Checks |
+|---------|--------|
+| `Quick Reference` | Commands exist, placeholders are removed, commands are current or explicitly marked as examples |
+| `Architecture` | Acts as an entry map, not a copied source-code encyclopedia |
+| `Key Patterns` | Project-specific, still true, not generic advice, not replaced by mechanical enforcement |
+| `Golden Rules` | Still hard rules, not duplicated from `docs/rules/`, not better represented as links |
+| `Hidden Knowledge` | Non-derivable, verified, not stale, not duplicated, correctly placed |
+| Sub-package `AGENTS.md` | Still justified by complexity, cross-module constraints, state machines, or special verification needs |
 
-### Delete criteria (stale detection)
+## Step 3: Score issues by health dimension
 
-An entry is stale if ANY of these are true:
+Use these dimensions to explain every finding:
 
-1. **File path no longer exists**: `ls` the referenced path — 404 = stale
-2. **Function/type no longer exists**: `grep` the referenced name — no match = stale
-3. **Behavior contradicted by code**: The insight says "must X" but the code now does Y
-4. **Now derivable from docs/rules/**: A rule document was added that covers this insight
-5. **Now in AGENTS.md main body**: The insight was promoted into a Golden Rule or Key Pattern
+| Dimension | Meaning |
+|-----------|---------|
+| `Signal` | The content is worth prompt space and helps future agents act better |
+| `Placement` | The content lives at the right `AGENTS.md` level and section |
+| `Currency` | Paths, commands, symbols, and described behavior are still true |
+| `Non-Derivability` | Hidden knowledge cannot now be inferred from code, git, or existing docs |
+| `Duplication` | The same guidance is not repeated across layers or docs |
+| `Actionability` | A future agent can follow the instruction directly |
 
-### Promote criteria
+Do not produce an overall numeric score. Prefer concrete findings with evidence.
 
-An entry in a package AGENTS.md should be promoted to root AGENTS.md if:
+## Step 4: Verify findings
 
-- It affects 2+ packages (cross-module constraint)
-- It is a build/test command that belongs in Quick Reference
-- It is a project-wide convention, not package-specific
+Before proposing a cleanup, verify it:
 
-## Step 3: Check for duplicates
+| Finding type | Verification |
+|--------------|--------------|
+| Missing or stale file path | Check the path exists |
+| Missing function, type, command, or symbol | Search for the referenced name |
+| Stale command | Run the safest relevant command, or explain why execution is unsafe |
+| Contradicted behavior | Inspect source or run the smallest relevant check |
+| Duplicate content | Cite both locations |
+| Now-derivable hidden knowledge | Cite the code, docs, git history, or AGENTS.md main-body section that now covers it |
 
-Scan across all AGENTS.md files for:
+If a finding cannot be verified, label it `Needs user input` instead of treating
+it as fact.
 
-- **Exact duplicates**: Same insight written in multiple places → keep in the most specific location
-- **Partial overlaps**: One insight subsumes another → merge into one, delete the weaker version
-- **Conflicts**: Two insights contradict each other → flag for user resolution
+## Step 5: Classify actions
 
-## Step 4: Present the report
+| Action | Use when |
+|--------|----------|
+| `Promotions` | Lower-level guidance affects multiple packages or belongs in a higher-level `AGENTS.md` surface |
+| `Deletions` | Content is stale, duplicated, generic, now derivable, or no longer useful |
+| `Rewrites` | Content is true but unclear, too verbose, misplaced within the same file, or missing verification context |
+| `Duplicates` | Exact or overlapping guidance appears in multiple places |
+| `Conflicts` | Two files or sections contradict each other and need user judgment |
+| `No Action Needed` | Content is valid, placed correctly, and useful |
+
+Do not auto-delete, auto-merge conflicts, or apply cleanups without approval.
+
+## Step 6: Present the report
 
 Output a structured report:
 
 ```markdown
-## AGENTS.md Audit Report
+## Memory Health Report
 
-### Promotions (move to higher-level AGENTS.md)
-1. `<source file>`: "<insight text>" → move to `<target file>` because <reason>
+### Summary
 
-### Deletions (stale or now-derivable)
-1. `<file>`: "<insight text>" → delete because <verification result>
+- Files reviewed: <count and paths>
+- Surfaces reviewed: <Quick Reference / Architecture / Key Patterns / Golden Rules / Hidden Knowledge / sub-package AGENTS.md>
+- Changes proposed: <count>
+- Items needing user input: <count>
+
+### Promotions
+
+1. `<source file>`: "<entry>" -> move to `<target file>` because <dimension + verification evidence>
+
+### Deletions
+
+1. `<file>`: "<entry>" -> delete because <dimension + verification evidence>
+
+### Rewrites
+
+1. `<file>`: "<entry>" -> rewrite as "<new wording>" because <dimension + verification evidence>
 
 ### Duplicates
-1. "<insight text>" in `<file A>` and `<file B>` → keep in `<file A>`, remove from `<file B>`
+
+1. "<entry>" appears in `<file A>` and `<file B>` -> keep `<file A>`, remove `<file B>` because <reason>
 
 ### Conflicts
-1. `<file A>` says "X" but `<file B>` says "Y" → needs user input
 
-### No action needed
-<brief note on entries that are still valid and well-placed>
+1. `<file A>` says "X" but `<file B>` says "Y" -> needs user input: <question>
+
+### No Action Needed
+
+<brief note on entries that are valid and well-placed>
 ```
 
-If no Hidden Knowledge sections exist anywhere, say so and offer to run `/learn` first.
+If no `AGENTS.md` memory surfaces exist beyond placeholders, say so and suggest
+running `/learn` at the end of a future session that discovers non-obvious
+knowledge.
 
-## Step 5: User approval
+## Step 7: User approval
 
-- Present ALL proposals before making any changes
-- Do NOT modify files without explicit user approval
-- The user may approve all, approve some, or reject all
-- For conflicts, ask the user which version is correct
+- Present all proposals before making any changes.
+- Do not modify files without explicit user approval.
+- The user may approve all, approve some, reject all, or ask for revisions.
+- For conflicts, ask which version is correct before editing.
+- Apply only approved changes.
 
 ## Procedure
 
-1. Find and read all AGENTS.md files
-2. Extract all `## Hidden Knowledge` entries
-3. Verify each entry (grep/ls/cat the referenced paths)
-4. Classify: promote / delete / duplicate / conflict / no action
-5. Present report
-6. Wait for user approval
-7. Apply approved changes only
+1. Find and read all project `AGENTS.md` files.
+2. Audit `Quick Reference`, `Architecture`, `Key Patterns`, `Golden Rules`,
+   `Hidden Knowledge`, and sub-package `AGENTS.md` justification.
+3. Verify each finding with paths, search, command output, source inspection, or
+   an explicit `Needs user input` label.
+4. Classify findings as `Promotions`, `Deletions`, `Rewrites`, `Duplicates`,
+   `Conflicts`, or `No Action Needed`.
+5. Present the full `Memory Health Report`.
+6. Wait for explicit user approval.
+7. Apply approved changes only.
+8. Report applied changes, rejected proposals, unresolved conflicts, and residual
+   risks.
