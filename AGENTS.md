@@ -32,6 +32,9 @@ For deeper context, follow the links — don't try to absorb everything upfront.
 
 | I want to... | Start here |
 |---|---|
+| Add/modify a plugin | `plugins/<name>/` — see Plugin Marketplace section below |
+| Validate marketplace or plugin | `claude plugin validate .` (marketplace) / `claude plugin validate ./plugins/<name>` (plugin) |
+| Test plugin install locally | `claude plugin marketplace add <repo-path>` then `claude plugin install <name>@agent-docs-plugins` |
 | Add/modify an API endpoint | [codemaps/INDEX.md](docs/codemaps/INDEX.md) <!-- TODO: replace with API codemap if useful --> |
 | Change database schema | [codemaps/INDEX.md](docs/codemaps/INDEX.md) <!-- TODO: replace with database codemap if useful --> |
 | Understand the build/deploy flow | [codemaps/INDEX.md](docs/codemaps/INDEX.md) <!-- TODO: replace with build/deploy codemap if useful --> |
@@ -83,6 +86,41 @@ For deeper context, follow the links — don't try to absorb everything upfront.
 3. Run `{{TEST_COMMAND}}` on affected package first <!-- TODO -->
 4. Update relevant docs (codemap, INDEX) if structure changed
 5. Commit with a message that explains WHY (business impact), not WHAT (code change)
+
+## Plugin Marketplace
+
+This repo ships with a Claude Code plugin marketplace at `.claude-plugin/marketplace.json`. Plugins live under `plugins/`.
+
+### Versioning: git commit SHA, not semver
+
+All plugins **omit the `version` field** by design. Claude Code resolves each plugin's version to the git commit SHA — every push to this repo automatically becomes a new version. No manual bumps, no release tags.
+
+### Local verification workflow
+
+After modifying a plugin, always verify before committing:
+
+```bash
+# 1. Validate the marketplace catalog
+claude plugin validate .
+
+# 2. Validate the individual plugin (checks plugin.json + skills frontmatter)
+claude plugin validate ./plugins/<name>
+
+# 3. (Optional) Smoke-test install from local path
+claude plugin marketplace add /path/to/this/repo
+claude plugin install <name>@agent-docs-plugins
+claude plugin list --json   # confirm enabled + correct version
+```
+
+`claude plugin validate` checks: JSON schema, duplicate plugin names, source path traversal, skill/agent/command frontmatter parsing. It does **not** check hook safety or MCP reachability — those require the full `scan-plugins` CI pipeline.
+
+### Adding a new plugin
+
+1. Create `plugins/<name>/` with `.claude-plugin/plugin.json` (no `version` field)
+2. Add skills as `skills/<skill-name>/SKILL.md` directories
+3. Register in `.claude-plugin/marketplace.json` with `"source": "./plugins/<name>"`
+4. Run `claude plugin validate .` and `claude plugin validate ./plugins/<name>`
+5. Commit
 
 ## Sub-Package Rules
 

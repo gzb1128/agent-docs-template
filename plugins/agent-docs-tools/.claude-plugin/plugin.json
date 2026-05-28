@@ -1,0 +1,8 @@
+{
+  "name": "agent-docs-tools",
+  "description": "Agent-First documentation tools — bootstrap agent docs, clean commits, learn/remember knowledge management skills",
+  "author": {
+    "name": "Agent Docs Team",
+    "email": "team@example.com"
+  }
+}
