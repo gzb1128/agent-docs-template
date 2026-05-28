@@ -125,17 +125,42 @@ Why:
 
 Users run `/plugin update` or let auto-update handle it. There is nothing to tag or release.
 
+### Available Plugins
+
+#### agent-docs-tools
+
+Skills and commands for Agent-First documentation workflows:
+
+| Skill | Type | Description |
+|---|---|---|
+| `bootstrap-agent-docs` | model-invoked | Scaffold a repo with AGENTS.md, docs/, and agent skills |
+| `clean-commit` | model-invoked | Run quality gates before committing with impact-scoped messages |
+| `learn` | slash command | Persist non-obvious session insights to AGENTS.md |
+| `remember` | slash command | Audit and reorganize AGENTS.md knowledge for staleness/duplication |
+
 ### Installation
 
 ```bash
 # Add the marketplace (local path, GitHub repo, or git URL)
 claude plugin marketplace add gzb1128/agent-docs-template
 
-# Install a plugin
-claude plugin install example-plugin@agent-docs-plugins
+# Install the plugin
+claude plugin install agent-docs-tools@agent-docs-plugins
 
 # Update to latest commit
-claude plugin update example-plugin@agent-docs-plugins
+claude plugin update agent-docs-tools@agent-docs-plugins
+```
+
+### Local verification
+
+After modifying a plugin, validate before committing:
+
+```bash
+# Validate the marketplace catalog
+claude plugin validate .
+
+# Validate a specific plugin (checks plugin.json + skill frontmatter)
+claude plugin validate ./plugins/<name>
 ```
 
 ### Adding new plugins

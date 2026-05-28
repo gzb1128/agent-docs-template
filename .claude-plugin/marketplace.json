@@ -6,14 +6,14 @@
   },
   "plugins": [
     {
-      "name": "example-plugin",
-      "description": "Example plugin with code-review and git-workflow skills demonstrating the marketplace plugin format",
+      "name": "agent-docs-tools",
+      "description": "Agent-First documentation tools — bootstrap agent docs, clean commits, learn/remember knowledge management",
       "author": {
         "name": "Agent Docs Team"
       },
-      "category": "development",
-      "source": "./plugins/example-plugin",
-      "homepage": "https://github.com/example/agent-docs-template"
+      "category": "productivity",
+      "source": "./plugins/agent-docs-tools",
+      "homepage": "https://github.com/gzb1128/agent-docs-template"
     }
   ]
 }
