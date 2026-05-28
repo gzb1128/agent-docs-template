@@ -23,3 +23,7 @@ target/
 
 # Logs
 *.log
+
+# Agent template assets (override global dot-directory ignores)
+!.agents/
+!.agents/**

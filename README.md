@@ -12,7 +12,7 @@ This template ships with a skill at `.agents/skills/bootstrap-agent-docs/SKILL.m
 
 Point your agent at the skill and ask:
 
-> "Bootstrap agent docs for this repo using the bootstrap-agent-docs skill at `~/code/agent-docs-template/.agents/skills/bootstrap-agent-docs/SKILL.md`."
+> "Bootstrap agent docs for this repo using the bootstrap-agent-docs skill at `$AGENT_DOCS_TEMPLATE/.agents/skills/bootstrap-agent-docs/SKILL.md` (defaults to `~/code/agent-docs-template/`)."
 
 The skill detects your project's language/build system, copies this template, and fills in placeholders interactively. The `.agents/skills/` directory is copied along with the template, so the skill and the bundled `clean-commit` skill become available in the target repo automatically.
 
@@ -21,8 +21,10 @@ The skill detects your project's language/build system, copies this template, an
 ```bash
 # In your target repo root. --ignore-existing ensures we never overwrite
 # anything you already have (AGENTS.md, .gitignore, etc.).
+# Override the template path via $AGENT_DOCS_TEMPLATE if it lives elsewhere.
+TEMPLATE_DIR="${AGENT_DOCS_TEMPLATE:-$HOME/code/agent-docs-template}"
 rsync -av --ignore-existing --exclude='.git/' --exclude='README.md' \
-  ~/code/agent-docs-template/ ./
+  "$TEMPLATE_DIR/" ./
 
 # See what was created vs skipped
 git status
@@ -37,22 +39,28 @@ grep -rn 'TODO:' AGENTS.md docs/
 ```
 your-repo/
 ├── AGENTS.md                          # ~100-line table of contents (root entry for agents)
-├── .agents/skills/
-│   ├── bootstrap-agent-docs/SKILL.md  # The skill that scaffolds this structure into other repos
-│   └── clean-commit/SKILL.md          # Starter skill: enforce quality gates before commit
+├── .agents/
+│   ├── skills/
+│   │   ├── bootstrap-agent-docs/SKILL.md  # The skill that scaffolds this structure into other repos
+│   │   └── clean-commit/SKILL.md          # Starter skill: enforce quality gates before commit
+│   └── commands/                          # Manual-trigger commands (NOT skills — wire into /command yourself)
+│       ├── README.md                      # Why they're commands, how to wire them up
+│       ├── learn.md                       # Persist non-obvious insights to AGENTS.md
+│       └── remember.md                    # Audit existing AGENTS.md for stale/duplicate knowledge
 └── docs/
     ├── codemaps/INDEX.md              # Architecture maps (concept → file path)
-    ├── design/                        # Design specs: YYYY-MM-DD-<topic>-design.md
-    ├── plans/                         # Implementation plans: YYYY-MM-DD-<feature>.md
+    ├── design/INDEX.md                # Design specs: YYYY-MM-DD-<topic>-design.md
+    ├── plans/INDEX.md                 # Implementation plans: YYYY-MM-DD-<feature>.md
     ├── rules/                         # Coding standards
     │   ├── INDEX.md
+    │   ├── non-derivability.md        # 不可推导原则 — universal doc filter
     │   ├── document-conventions.md
     │   └── openai-harness-engineering.md
     ├── troubleshoot/INDEX.md          # Symptom-indexed troubleshooting
     ├── runbooks/INDEX.md              # Deterministic operational procedures
     ├── lib/INDEX.md                   # Third-party library usage notes
     ├── verify/INDEX.md                # Dry-run verification flows
-    └── _templates/                    # Templates for new docs
+    └── _templates/                    # Templates for new docs (copy & customize)
         ├── codemap.md
         ├── design.md
         ├── plan.md
@@ -66,17 +74,18 @@ your-repo/
 | **Repo as record system** | If agents can't see it in markdown, it doesn't exist. No tribal knowledge in Slack/Docs. |
 | **Progressive disclosure** | `AGENTS.md` (~100 lines) → `docs/codemaps/*.md` (per-component) → source files. Never duplicate. |
 | **INDEX per category** | Every `docs/*/` has an `INDEX.md` with a "When to Use" column so agents can triage at a glance. |
+| **Non-derivability filter** | Record only what cannot be derived from code, git history, or existing docs. |
 | **Maps, not encyclopedias** | Codemaps use tables of concept → file path. They link to source, never copy code. |
 | **Sub-package AGENTS.md** | Add one only for modules with state machines, cross-cutting constraints, or high complexity. |
 | **Date-prefixed designs/plans** | `YYYY-MM-DD-<topic>-design.md` keeps history browsable in chronological order. |
 
 ## Filling in the Template
 
-After copying, do these in order:
+After copying, these are useful next steps:
 
 1. **Replace `{{PROJECT_NAME}}`, `{{BUILD_COMMAND}}`, etc.** in `AGENTS.md` (grep for `{{`)
 2. **Fill `TODO:` markers** in `AGENTS.md` (grep for `TODO:`)
-3. **Write your first codemap** under `docs/codemaps/<component>.md` using the template in `docs/_templates/codemap.md`. Update `docs/codemaps/INDEX.md` to link it.
+3. **If navigation is non-obvious, write a codemap** under `docs/codemaps/<component>.md` using `docs/_templates/codemap.md`. Update `docs/codemaps/INDEX.md` to link it.
 4. **Add project-specific rules** under `docs/rules/`. Update `docs/rules/INDEX.md`.
 5. **Commit the baseline:**
    ```bash

@@ -32,9 +32,9 @@ For deeper context, follow the links — don't try to absorb everything upfront.
 
 | I want to... | Start here |
 |---|---|
-| Add/modify an API endpoint | [codemaps/api.md](docs/codemaps/api.md) <!-- TODO: write this codemap --> |
-| Change database schema | [codemaps/database.md](docs/codemaps/database.md) <!-- TODO --> |
-| Understand the build/deploy flow | [codemaps/build.md](docs/codemaps/build.md) <!-- TODO --> |
+| Add/modify an API endpoint | [codemaps/INDEX.md](docs/codemaps/INDEX.md) <!-- TODO: replace with API codemap if useful --> |
+| Change database schema | [codemaps/INDEX.md](docs/codemaps/INDEX.md) <!-- TODO: replace with database codemap if useful --> |
+| Understand the build/deploy flow | [codemaps/INDEX.md](docs/codemaps/INDEX.md) <!-- TODO: replace with build/deploy codemap if useful --> |
 | Troubleshoot a system issue | [troubleshoot/INDEX.md](docs/troubleshoot/INDEX.md) |
 | Run an operational procedure | [runbooks/INDEX.md](docs/runbooks/INDEX.md) |
 | Use a third-party library | [lib/INDEX.md](docs/lib/INDEX.md) |
@@ -42,13 +42,13 @@ For deeper context, follow the links — don't try to absorb everything upfront.
 | Look up a coding standard | [rules/INDEX.md](docs/rules/INDEX.md) |
 | Find an architecture map | [codemaps/INDEX.md](docs/codemaps/INDEX.md) |
 
-**More**: [Code map index](docs/codemaps/INDEX.md) | [Coding rules](docs/rules/INDEX.md) | [Troubleshoot](docs/troubleshoot/INDEX.md) | [Runbooks](docs/runbooks/INDEX.md) | [Library refs](docs/lib/INDEX.md) | [Design docs](docs/design/) | [Plans](docs/plans/) | [Verify index](docs/verify/INDEX.md)
+**More**: [Code map index](docs/codemaps/INDEX.md) | [Coding rules](docs/rules/INDEX.md) | [Troubleshoot](docs/troubleshoot/INDEX.md) | [Runbooks](docs/runbooks/INDEX.md) | [Library refs](docs/lib/INDEX.md) | [Design docs](docs/design/INDEX.md) | [Plans](docs/plans/INDEX.md) | [Verify index](docs/verify/INDEX.md) | [Doc templates](docs/_templates/)
 
 ## Key Patterns
 
 <!-- TODO: 3-5 bullets describing the dominant patterns/conventions of this codebase.
      Examples:
-     - **Swagger-driven API**: Define in `swagger/`, auto-generate to `gen/` — never edit `gen/`
+     - **Generated code**: Edit source definitions, regenerate outputs — never hand-edit generated files
      - **DI**: Uber FX (runtime), Wire (compile-time)
      - **Tests next to source**: `_test.go` lives with the file it tests
 -->
@@ -64,7 +64,7 @@ For deeper context, follow the links — don't try to absorb everything upfront.
 
 ## Document Creation Rules
 
-> ⚠️ **CRITICAL**: Before creating ANY documentation, read [docs/rules/document-conventions.md](docs/rules/document-conventions.md) and [docs/rules/openai-harness-engineering.md](docs/rules/openai-harness-engineering.md).
+> ⚠️ **CRITICAL**: Before creating ANY documentation, read [docs/rules/non-derivability.md](docs/rules/non-derivability.md), [docs/rules/document-conventions.md](docs/rules/document-conventions.md), and [docs/rules/openai-harness-engineering.md](docs/rules/openai-harness-engineering.md).
 
 **Anti-Patterns (RED):**
 - Copying code/config into documentation
@@ -73,6 +73,7 @@ For deeper context, follow the links — don't try to absorb everything upfront.
 **Correct Pattern (GREEN):**
 - Use tables to map concepts → file paths
 - Link to source files instead of copying content
+- Record only what cannot be derived from code, git history, or existing docs
 - INDEX files: ~30 lines of tables + quick navigation
 
 ## Development Workflow

@@ -5,7 +5,7 @@
 
 **Status:** Pending | In Progress | Done | Cancelled
 **Date:** YYYY-MM-DD
-**Design Doc:** `docs/design/YYYY-MM-DD-{{TOPIC}}-design.md`
+**Context:** `docs/design/YYYY-MM-DD-{{TOPIC}}-design.md` / issue / codemap / prior commit
 
 ## Goal
 
@@ -13,7 +13,7 @@
 
 ## Approach
 
-<!-- High-level strategy. Link to design doc for rationale. -->
+<!-- High-level strategy. Link to the strongest context source for rationale. -->
 
 ## Tasks
 

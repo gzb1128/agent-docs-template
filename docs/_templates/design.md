@@ -3,7 +3,7 @@
 > Template — copy to `docs/design/YYYY-MM-DD-<topic>-design.md` and customize.
 > Delete this blockquote when filling in.
 
-**Status:** Draft | Approved | Superseded
+**Status:** Draft | Approved | Superseded <!-- optional; delete if your repo does not track doc status -->
 **Date:** YYYY-MM-DD
 **Author:** {{AUTHOR}}
 **Supersedes:** _(if any)_

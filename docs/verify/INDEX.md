@@ -1,6 +1,6 @@
 # Verify — Verification Flow Index
 
-**Purpose:** Dry-run and local verification flows for the system. Prefer deterministic local tests over hitting real environments. No writes to production DB, no real deploys, no Argo workflow submissions.
+**Purpose:** Dry-run and local verification flows for the system. Prefer deterministic local tests over hitting real environments. Avoid production writes, real deploys, or irreversible external side effects.
 
 ## Verification Flows
 

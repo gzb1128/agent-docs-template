@@ -12,7 +12,7 @@ Diagnostic guides indexed by **symptom**. When an agent hits a problem, it locat
 
 ## How to Add a Troubleshoot Doc
 
-1. Encountered a non-obvious issue? Write it up the same day.
+1. Encountered a recurring or non-obvious issue? Add or update a guide while the context is fresh.
 2. File name: `<short-symptom>.md` (e.g., `pod-stuck-pending.md`, not `2026-05-28-incident.md`).
 3. Structure:
    - **Symptom** — what the user/operator sees

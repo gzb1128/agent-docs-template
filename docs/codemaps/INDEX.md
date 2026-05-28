@@ -1,6 +1,8 @@
 # Code Maps Index
 
-Code maps provide a navigable view of the system architecture. **Maps, not encyclopedias** — use tables that map concepts to file paths, link to source, never copy code content into the map.
+Code maps provide a navigable view of system architecture. **Maps, not encyclopedias** — map concepts to file paths, link to source, and avoid copying code/config content.
+
+Use the [Non-Derivability Principle](../rules/non-derivability.md): a codemap should record boundaries, ownership, workflows, and cross-module relationships that are hard to infer from a single file scan.
 
 ## Available Maps
 
@@ -8,22 +10,18 @@ Code maps provide a navigable view of the system architecture. **Maps, not encyc
 
 | Document | Description | Target Audience |
 |----------|-------------|-----------------|
-| _none yet — see `docs/_templates/codemap.md` for the template_ | — | — |
+| _none yet — see [../_templates/codemap.md](../_templates/codemap.md) for the template_ | — | — |
 
-## When to Create a Code Map
+## Creation Guidance
 
-Create a codemap for a component when ANY of:
+These are signals, not gates. Create or update a codemap when it helps future agents navigate something non-obvious:
 
-- It has 3+ consumer packages
-- It implements a state machine or non-trivial protocol
-- A new contributor would need > 30 minutes to navigate it from source alone
-- It crosses module boundaries (e.g., API + DB + worker)
+- Component boundaries and ownership are not obvious from directory names
+- A workflow crosses modules (e.g., API + DB + worker)
+- A state machine, protocol, or lifecycle is easier to understand as a map
+- A new contributor repeatedly asks "where does this start?"
 
-Do NOT create a codemap for:
-
-- Single-file utilities
-- Generated code (link to the generator instead)
-- Code that's about to be replaced
+Usually skip a dedicated codemap for single-file utilities, generated code, or code that is about to be replaced.
 
 ## Code Map Depth Guidelines
 
@@ -44,8 +42,8 @@ Quick check: `rg "<package-path>" --glob '*.<ext>' | wc -l`. > 20 references = c
 
 ## Anti-Patterns
 
-| ❌ Don't | ✅ Do |
-|---------|------|
+| Don't | Do |
+|-------|----|
 | Copy function bodies into the codemap | Link to `path/to/file.go:42` |
 | Copy entire YAML configs | Table: file → purpose → key fields |
 | Write a tutorial in the codemap | Tutorials go in `docs/runbooks/` or `docs/verify/` |

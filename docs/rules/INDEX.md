@@ -6,12 +6,22 @@ Coding standards and best practices. Each rule has a **"When to Use"** trigger s
 
 | Rule | Description | When to Use |
 |------|-------------|-------------|
+| [Non-Derivability Principle (不可推导原则)](non-derivability.md) | Only write down what cannot be derived from code, git history, or existing docs | **Before writing ANY doc** — the universal filter |
 | [Document Conventions](document-conventions.md) | Documentation tree, naming rules, when to add a sub-package `AGENTS.md` | Creating/refactoring any file under `docs/` |
 | [OpenAI Harness Engineering](openai-harness-engineering.md) | Agent-First engineering practices: progressive disclosure, documentation organization | Reviewing the overall doc philosophy; auditing codemaps / `AGENTS.md` files |
 
+## Related Commands
+
+The [`.agents/commands/`](../../.agents/commands/) directory ships two manual-trigger commands that operationalize the non-derivability principle:
+
+- `/learn` — persist non-obvious session insights into the right `AGENTS.md`
+- `/remember` — audit existing `## Hidden Knowledge` for staleness and duplication
+
+See [`.agents/commands/README.md`](../../.agents/commands/README.md) for why they're commands (not skills) and how to wire them into your agent.
+
 <!-- TODO: Add project-specific rules below. Examples:
-| [Go Coding Standards](go-coding-standards.md) | Error handling, Context usage, interface design | Writing/reviewing Go code |
-| [API Design Guide](api-design.md) | REST/gRPC naming, versioning, error codes | Adding or modifying an API |
+| Go Coding Standards | Error handling, Context usage, interface design | Writing/reviewing Go code |
+| API Design Guide | REST/gRPC naming, versioning, error codes | Adding or modifying an API |
 -->
 
 ## How to Use

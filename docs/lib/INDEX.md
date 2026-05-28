@@ -10,14 +10,14 @@ Project-specific usage notes for third-party libraries/frameworks. **Not generic
 |----------|---------------------|--------------|
 | _none yet_ | — | — |
 
-## How to Add a Lib Doc
+## Good Candidates
 
-Only add a lib doc when ONE of:
+Add a lib doc when it captures project-specific knowledge that is not obvious from upstream docs or source code:
 
-- The library has a well-known footgun the team keeps hitting
-- We've chosen one option from several (e.g., "we use `resty` v3 not v2 — here's why")
-- The official docs are incomplete or misleading for our use case
-- We have a project-specific wrapper / convention around the library
+- The library has a footgun the team keeps hitting
+- The project chose one option from several (e.g., "we use `resty` v3 not v2 — here's why")
+- The official docs are incomplete or misleading for this use case
+- The project has a wrapper or convention around the library
 
 Structure:
 - **Library and version** — what we use
@@ -28,6 +28,6 @@ Structure:
 
 ## Anti-Patterns
 
-- ❌ Copying the library's tutorial into our docs — link to upstream
-- ❌ Documenting every feature — only document non-obvious parts
-- ❌ Stale version numbers — pin and update when you bump
+- Copying the library's tutorial into our docs — link to upstream
+- Documenting every feature — only document non-obvious parts
+- Stale version numbers — pin and update when you bump
