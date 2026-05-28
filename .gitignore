@@ -24,6 +24,9 @@ target/
 # Logs
 *.log
 
+# Worktrees
+.worktrees/
+
 # Agent template assets (override global dot-directory ignores)
 !.agents/
 !.agents/**
