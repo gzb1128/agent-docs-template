@@ -27,10 +27,6 @@ target/
 # Worktrees
 .worktrees/
 
-# Agent template assets (override global dot-directory ignores)
-!.agents/
-!.agents/**
-
 # Claude plugin marketplace (override global dot-directory ignores)
 !.claude-plugin/
 !.claude-plugin/**
