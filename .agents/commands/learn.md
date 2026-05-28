@@ -1,91 +1,158 @@
 ---
-description: Learn from this session — persist non-obvious insights to AGENTS.md
+description: Learn from this session - propose verified AGENTS.md memory updates
 ---
 
-> **Manual-trigger command.** This file is intentionally NOT a skill — keeping
-> it out of the auto-loaded skill set prevents the model from constantly
-> debating whether to "learn" something mid-task. Wire it into your agent as a
-> slash command (e.g., `/learn`) and invoke it deliberately at the end of a
-> session. See `.agents/commands/README.md` for setup.
+> **Manual-trigger command.** This file is intentionally NOT a skill. Keeping it
+> out of the auto-loaded skill set prevents the model from constantly debating
+> whether to learn something mid-task. Wire it into your command system as a
+> slash command (for example, `/learn`) and invoke it deliberately at the end of
+> a session. Do not add hooks, background tasks, auto-trigger behavior, runtime
+> storage, vector databases, MCP integration, or external memory systems.
 
-Review what happened in this session and persist non-obvious knowledge to the appropriate AGENTS.md.
+Review what happened in this session and produce verified, reviewable memory
+proposals for the appropriate `AGENTS.md` file. Do not edit files until the user
+has seen the proposed diff and explicitly approved it.
 
 ## Non-Derivability Principle (不可推导原则)
 
-**Only record information that CANNOT be derived from the codebase itself.** Before writing any insight, ask:
+**Only record information that CANNOT be derived from the codebase itself.**
+Before proposing any `Hidden Knowledge` entry, ask:
 
-> Can the next agent (or human) discover this by reading the code, running `git log`, or checking existing docs?
+> Can the next agent or human discover this by reading the code, running
+> `git log`, or checking existing docs?
 
-If yes, do NOT record it. The bar is high — most knowledge belongs in code comments or commit messages, not in AGENTS.md.
+If yes, do NOT record it as hidden knowledge. The bar is high. Most knowledge
+belongs in source, commit messages, or existing docs, not in `AGENTS.md`.
 
-## What to record
+## Step 1: Extract candidate insights
 
-Only discoveries that pass the non-derivability test:
+Review the current session and list candidate insights. Candidates usually come
+from hidden dependencies, misleading failures, project-specific workarounds,
+critical ordering, command discovery, or documentation gaps.
 
-1. **Hidden dependencies**: Files/modules that must be changed together but are not obviously connected
-   - Example: "Changing `src/domain/types.ts` requires updating `api/schema.json` — they mirror each other but no generator enforces it"
-2. **Misleading errors**: Error messages that point to the wrong location or cause
-   - Example: "'cannot find provider' actually means the dependency-injection graph is missing a module registration"
-3. **Workarounds and quirks**: Project-specific behaviors that differ from standard patterns
-   - Example: "Legacy database helpers use a global connection — do not add new usage; use the repository wrapper instead"
-4. **Critical ordering**: Operations that must happen in a specific sequence
-   - Example: "Migration SQL must be committed before the code that uses the new column"
+Do not write anything yet. First classify each candidate.
 
-## What NOT to record (derivable from code — skip these)
+## Step 2: Classify candidates
 
-- Code patterns, architecture, file structure — visible by reading the code
-- Git history or recent changes — `git log` / `git blame` is authoritative
-- Debugging solutions or fix recipes — the fix is in the code, the commit message has the context
-- Anything already in AGENTS.md, docs/rules/, or README
-- Standard language behavior (e.g., "Go interfaces are satisfied implicitly")
-- Non-obvious build/test commands — put these in AGENTS.md Quick Reference table, not Hidden Knowledge
-- Ephemeral session details (what you tried, what failed temporarily)
+| Classification | Destination | Rule |
+|----------------|-------------|------|
+| `Hidden Knowledge` | Nearest relevant `AGENTS.md` under `## Hidden Knowledge` | Only for non-derivable hidden dependencies, misleading errors, workarounds, quirks, or critical ordering |
+| `Quick Reference` | Root `AGENTS.md` Quick Reference table | Build, test, lint, run, codegen, clean, or other common commands |
+| `Rule` | Report suggested destination only | Team convention or hard boundary; do not create or modify `docs/rules/` from `/learn` |
+| `Doc` | Report suggested destination only | Longer design, troubleshoot, runbook, or library note; do not create or modify docs from `/learn` |
+| `Skip` | No write | Derivable, one-off, duplicated, stale, generic, or unverifiable |
 
-## Pre-Write Verification (写入前验证)
+## Hidden Knowledge candidates
 
-Before writing any insight, verify it is still true:
+Only candidates that pass the non-derivability test may become hidden knowledge:
 
-1. If the insight mentions a **file path**: `ls` or `cat` to confirm the file still exists
-2. If the insight mentions a **function or type**: `grep` to confirm it is still present
-3. If the insight mentions a **behavior or constraint**: run the relevant command to confirm
-4. If verification fails: the insight is stale — do NOT record it
+1. **Hidden dependencies**: Files or modules that must be changed together but
+   are not obviously connected.
+2. **Misleading errors**: Error messages that point to the wrong location or
+   cause.
+3. **Workarounds and quirks**: Project-specific behavior that differs from the
+   standard pattern.
+4. **Critical ordering**: Operations that must happen in a specific sequence.
 
-## Where to write
+## Skip criteria
 
-Choose the nearest AGENTS.md to the affected code:
+Skip candidates that are:
+
+- Code patterns, architecture, or file structure visible by reading source.
+- Git history or recent changes that `git log` or `git blame` already records.
+- Debugging solutions where the fix is now in code and the commit message should
+  carry the context.
+- Already present in `AGENTS.md`, `docs/rules/`, or README.
+- Standard language or framework behavior.
+- Non-obvious commands that belong in Quick Reference, not Hidden Knowledge.
+- Ephemeral session details, including attempts that failed temporarily.
+- Unverified claims.
+
+## Step 3: Verify each retained candidate
+
+Every retained candidate needs explicit evidence before it can be proposed:
+
+| Candidate mentions | Verification evidence |
+|--------------------|-----------------------|
+| File path | Confirm the path exists with `ls` or by reading the file |
+| Function, type, command, or symbol | Confirm it exists with search or a language-aware lookup |
+| Behavior or constraint | Run the smallest relevant command, inspect source, or explain why direct execution is unsafe |
+| Existing AGENTS.md content | Read the target section and check for stale or duplicate entries |
+
+If verification fails, classify the candidate as `Skip` and explain the failed
+check. If verification cannot be performed safely, report it as unverified and
+do not propose a write.
+
+## Step 4: Choose the target
+
+Choose the nearest `AGENTS.md` to the affected scope:
 
 | Scope of insight | Target file |
-|---|---|
-| Affects entire project | Root `AGENTS.md` (under `## Hidden Knowledge` section) |
+|------------------|-------------|
+| Affects entire project | Root `AGENTS.md` |
 | Affects a specific package | `<package>/AGENTS.md` |
-| Affects a specific module | Create `<package>/<module>/AGENTS.md` if needed |
+| Affects a complex module | `<package>/<module>/AGENTS.md`, only if sub-package criteria are met |
 
-## Format
+For `Hidden Knowledge`, append to or create a `## Hidden Knowledge` section near
+the end of the target `AGENTS.md`. Keep each insight to 1-3 lines.
 
-Add insights as a `## Hidden Knowledge` section (create if not exists) at the end of the target AGENTS.md. Each insight is 1-3 lines:
+For `Quick Reference`, propose a row update in the root `AGENTS.md` table.
 
-```markdown
-## Hidden Knowledge
+For `Rule` and `Doc`, report the suggested destination only. Do not create or
+modify rule docs, design docs, troubleshoot docs, runbooks, or library docs from
+this command.
 
-- **domain + API schema sync**: `src/domain/types.ts` must match `api/schema.json` — no generator enforces this, and drift breaks clients
-- **config regenerate**: After editing `config/schema.yaml`, run the project codegen command from AGENTS.md or generated config bindings will be stale
+## Step 5: Show proposed changes first
+
+Before editing any file, show all proposals in this format:
+
+````markdown
+## Learn Proposals
+
+### 1. `<classification>` -> `<target file>`
+
+**Why:** <one-line reason this helps future sessions>
+
+**Verification:** <path/symbol/command/behavior evidence>
+
+**Action:** <add/update/skip/report-only>
+
+```diff
+- <existing line, only when updating an approved existing entry>
++ <exact proposed addition or replacement>
 ```
 
-## Anti-Staleness (防漂移)
+### Skipped Candidates
 
-Existing Hidden Knowledge sections can become stale. When you encounter an existing insight while working:
+1. `<candidate>` -> skipped because <reason>
 
-- If the insight references a file/function/behavior that has **changed or been removed**: delete or update it
-- If the insight contradicts what you observe in the code: trust the code, update the insight
-- "The AGENTS.md says X exists" is NOT the same as "X exists now" — always verify
+### Report-Only Suggestions
+
+1. `<candidate>` -> belongs in <suggested destination>, not handled by `/learn`
+````
+
+Do not skip the diff and approval step. Even if the user asks to apply quickly,
+the user must see the exact proposed changes and approve them first.
+
+## Step 6: Apply approved changes only
+
+After approval:
+
+1. Apply only the proposals the user approved.
+2. Preserve existing `AGENTS.md` structure and keep additions concise.
+3. Do not perform general cleanup from `/learn`; use `/remember` for stale,
+   duplicated, or misplaced existing memory.
+4. Report what changed, where it changed, and which candidates were skipped.
 
 ## Procedure
 
-1. Review the conversation history for non-obvious discoveries
-2. **Filter through non-derivability test**: can this be derived from code? If yes, skip
-3. **Verify each insight is still true** (grep/cat/ls the referenced paths)
-4. For each verified insight, determine the correct target AGENTS.md
-5. **Check existing Hidden Knowledge**: remove any stale entries you encounter
-6. Append to existing `## Hidden Knowledge` section or create one
-7. Keep each insight to 1-3 lines — do not write essays
-8. Report what you added and where
+1. Review the conversation history for candidate insights.
+2. Classify each candidate as `Hidden Knowledge`, `Quick Reference`, `Rule`,
+   `Doc`, or `Skip`.
+3. Apply the non-derivability test to `Hidden Knowledge` candidates.
+4. Verify every retained candidate and record evidence.
+5. Choose the correct `AGENTS.md` target or report-only destination.
+6. Show proposed diffs and skipped candidates.
+7. Wait for explicit user approval.
+8. Apply approved `AGENTS.md` changes only.
+9. Report final writes, skips, and remaining report-only suggestions.

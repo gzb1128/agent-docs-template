@@ -6,11 +6,11 @@ Plans often link to a design doc in [../design/](../design/), but that is not a 
 
 ## Plans
 
-<!-- TODO: Add one row per plan, newest at the top. -->
+<!-- 最新计划放在最上方。 -->
 
 | Date | Document | Status | Linked Context |
 |------|----------|--------|----------------|
-| _none yet — see [../_templates/plan.md](../_templates/plan.md) for the template_ | — | — | — |
+| 2026-05-28 | [memory-commands.md](2026-05-28-memory-commands.md) | Done | [memory commands design](../design/2026-05-28-memory-commands-design.md) |
 
 ## How to Add a Plan
 
