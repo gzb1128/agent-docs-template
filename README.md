@@ -26,8 +26,8 @@ Updates land automatically — the plugin is pinned to git commit SHA, every pus
 |---|---|---|
 | `bootstrap-agent-docs` | model-invoked | Scaffold `AGENTS.md`, `docs/_templates/`, `docs/rules/`, and per-category INDEX files into a target repo |
 | `clean-commit` | model-invoked | Run quality gates (lint/test/typecheck) before committing, with messages that explain WHY |
-| `learn` | slash command | Persist non-obvious session insights to the right `AGENTS.md` (verified, approval-gated) |
-| `remember` | slash command | Audit `AGENTS.md` knowledge for staleness, duplication, and misplacement |
+| `learn` | manual skill (`/agent-docs-tools:learn`) | Persist non-obvious session insights to the right `AGENTS.md` (verified, approval-gated) |
+| `remember` | manual skill (`/agent-docs-tools:remember`) | Audit `AGENTS.md` knowledge for staleness, duplication, and misplacement |
 
 The template payload that `bootstrap-agent-docs` rsyncs lives inside the plugin at `plugins/agent-docs-tools/templates/` and resolves at runtime via `${CLAUDE_PLUGIN_ROOT}/templates/`. No separate repo clone needed.
 

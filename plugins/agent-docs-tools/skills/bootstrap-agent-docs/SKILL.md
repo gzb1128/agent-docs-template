@@ -153,7 +153,10 @@ Print this for the user (the agent is done; the user/agent iterates from here):
 Bootstrap complete. Next steps for you/the agent:
 
 1. Fill placeholders in AGENTS.md (search for "TODO:" markers)
-2. (Optional) Install the agent-docs-tools plugin to get /learn and /remember:
+2. (Optional) Use the agent-docs-tools manual skills for ongoing memory maintenance:
+   /agent-docs-tools:learn
+   /agent-docs-tools:remember
+   If this repo was scaffolded without the plugin installed, install it first:
    claude plugin marketplace add gzb1128/agent-docs-template
    claude plugin install agent-docs-tools@agent-docs-plugins
 3. If useful, write your first code map: docs/codemaps/<component>.md

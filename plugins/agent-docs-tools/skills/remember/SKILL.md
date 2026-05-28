@@ -6,12 +6,11 @@ argument-hint: [optional-scope]
 allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 ---
 
-> **Manual-trigger command.** This file is intentionally NOT a skill. Keeping it
-> out of the auto-loaded skill set prevents the model from running memory audits
-> mid-task. Wire it into your command system as a slash command (for example,
-> `/remember`) and invoke it deliberately when you want to clean up. Do not add
-> hooks, background tasks, auto-trigger behavior, runtime storage, vector
-> databases, MCP integration, or external memory systems.
+> **Manual-trigger skill.** `disable-model-invocation: true` keeps the model from
+> running memory audits automatically mid-task. When installed from this plugin,
+> invoke it deliberately as `/agent-docs-tools:remember` when you want to clean
+> up. Do not add hooks, background tasks, auto-trigger behavior, runtime storage,
+> vector databases, MCP integration, or external memory systems.
 
 Review all `AGENTS.md` files across the project and produce a structured
 `Memory Health Report`. Default behavior is report-only. Do not edit files until
@@ -19,10 +18,10 @@ the user has reviewed the proposals and explicitly approved the changes.
 
 ## What this does
 
-This is the complement to `/learn`:
+This is the complement to `/agent-docs-tools:learn`:
 
-- `/learn` proposes verified memory additions from the current session.
-- `/remember` audits existing `AGENTS.md` memory surfaces for staleness,
+- `/agent-docs-tools:learn` proposes verified memory additions from the current session.
+- `/agent-docs-tools:remember` audits existing `AGENTS.md` memory surfaces for staleness,
   duplication, misplacement, and low-signal content.
 
 ## Step 1: Gather memory layers
@@ -136,7 +135,7 @@ Output a structured report:
 ```
 
 If no `AGENTS.md` memory surfaces exist beyond placeholders, say so and suggest
-running `/learn` at the end of a future session that discovers non-obvious
+running `/agent-docs-tools:learn` at the end of a future session that discovers non-obvious
 knowledge.
 
 ## Step 7: User approval
