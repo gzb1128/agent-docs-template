@@ -1,0 +1,19 @@
+{
+  "name": "agent-docs-plugins",
+  "owner": {
+    "name": "Agent Docs Team",
+    "email": "team@example.com"
+  },
+  "plugins": [
+    {
+      "name": "example-plugin",
+      "description": "Example plugin with code-review and git-workflow skills demonstrating the marketplace plugin format",
+      "author": {
+        "name": "Agent Docs Team"
+      },
+      "category": "development",
+      "source": "./plugins/example-plugin",
+      "homepage": "https://github.com/example/agent-docs-template"
+    }
+  ]
+}
