@@ -42,7 +42,7 @@ If yes → skip. If no → write it.
 | **troubleshoot/** | Symptoms whose root cause is non-obvious from the error message or stack trace. |
 | **lib/** | Library quirks that bite the team — not features documented in upstream docs. |
 | **design/**, **plans/** | The *decision*, not the implementation. Implementation lives in source + commit messages. The design records why one path was chosen over alternatives — that's the non-derivable artifact. |
-| **AGENTS.md `## Hidden Knowledge`** | The strictest application. If the `agent-docs-tools` plugin is installed, use `/agent-docs-tools:learn` to capture these entries. |
+| **AGENTS.md `## Hidden Knowledge`** | The strictest application. Capture entries only after validation and human approval. |
 
 ## Anti-Staleness Corollary
 
@@ -58,7 +58,7 @@ When you encounter an existing doc entry while working:
 - If it's stale → delete or update it in the same commit
 - If it's now derivable from a newer source → delete and point to the source
 
-If the `agent-docs-tools` plugin is installed, `/agent-docs-tools:remember` automates this audit on demand.
+Run periodic memory audits to find stale, duplicated, or newly derivable entries.
 
 ## Why This Principle Beats Hard Doc Gates
 

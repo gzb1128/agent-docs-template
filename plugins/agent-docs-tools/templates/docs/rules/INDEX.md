@@ -10,14 +10,11 @@ Coding standards and best practices. Each rule has a **"When to Use"** trigger s
 | [Document Conventions](document-conventions.md) | Documentation tree, naming rules, when to add a sub-package `AGENTS.md` | Creating/refactoring any file under `docs/` |
 | [OpenAI Harness Engineering](openai-harness-engineering.md) | Agent-First engineering practices: progressive disclosure, documentation organization | Reviewing the overall doc philosophy; auditing codemaps / `AGENTS.md` files |
 
-## Related Skills
+## Related Workflows
 
-If you have installed the `agent-docs-tools` plugin (`claude plugin install agent-docs-tools@agent-docs-plugins`), two skills operationalize the non-derivability principle:
-
-- `/agent-docs-tools:learn` — persist non-obvious session insights into the right `AGENTS.md`
-- `/agent-docs-tools:remember` — audit existing `## Hidden Knowledge` for staleness and duplication
-
-Both are manual-trigger (not auto-invoked by the model) — invoke them deliberately at the end of a session.
+- Capture non-obvious session insights in the nearest relevant `AGENTS.md` after applying the non-derivability filter.
+- Periodically audit `AGENTS.md` memory surfaces for staleness, duplication, and misplaced details.
+- Keep memory workflows manual and approval-gated; do not auto-write persistent guidance without human review.
 
 <!-- TODO: Add project-specific rules below. Examples:
 | Go Coding Standards | Error handling, Context usage, interface design | Writing/reviewing Go code |
