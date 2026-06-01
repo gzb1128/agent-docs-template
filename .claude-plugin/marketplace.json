@@ -11,7 +11,11 @@
         "name": "Agent Docs Team"
       },
       "category": "productivity",
-      "source": "./plugins/agent-docs-tools",
+      "source": {
+        "source": "git-subdir",
+        "repo": "gzb1128/agent-docs-template",
+        "path": "plugins/agent-docs-tools"
+      },
       "homepage": "https://github.com/gzb1128/agent-docs-template"
     }
   ]
