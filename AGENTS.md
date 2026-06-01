@@ -11,17 +11,22 @@ This repo hosts the `agent-docs-tools` Claude Code plugin and its template paylo
 |------|---------|
 | `.claude-plugin/marketplace.json` | Marketplace catalog (`agent-docs-plugins`) |
 | `plugins/agent-docs-tools/` | The single distributable plugin |
-| `plugins/agent-docs-tools/skills/` | 4 skills: `bootstrap-agent-docs`, `clean-commit`, `learn`, `remember` |
+| `plugins/agent-docs-tools/skills/` | 6 skills: `bootstrap-agent-docs`, `clean-commit`, `diff-cleanup`, `learn`, `quality-reviewer`, `remember` |
 | `plugins/agent-docs-tools/templates/` | Template payload rsynced by the `bootstrap-agent-docs` skill |
 | `docs/design/`, `docs/plans/` | Design docs and plans for THIS repo's evolution |
+| `docs/verify/` | RED→GREEN→REFACTOR test process and scenario build scripts |
+| `Makefile` | `validate` + `test-skills-link/unlink/status` for skill verification |
 | `README.md` | User-facing install + usage guide |
 
 ## Quick Reference
 
 | Action | Command |
 |--------|---------|
-| Validate marketplace | `claude plugin validate .` |
-| Validate plugin | `claude plugin validate ./plugins/agent-docs-tools` |
+| Validate marketplace + plugin | `make validate` |
+| Link skills into `~/.agents/skills/` for testing | `make test-skills-link` then restart opencode |
+| Check current symlink state | `make test-skills-status` |
+| Build a scenario for GREEN testing | `bash docs/verify/scenarios/<skill>/build-<letter>.sh` |
+| Remove test symlinks | `make test-skills-unlink` |
 | Smoke-test install (local path) | `claude plugin marketplace add $(pwd)` then `claude plugin install agent-docs-tools@agent-docs-plugins` |
 | Inspect installed plugin | `claude plugin list --json \| jq '.[] \| select(.id\|contains("agent-docs-tools"))'` |
 

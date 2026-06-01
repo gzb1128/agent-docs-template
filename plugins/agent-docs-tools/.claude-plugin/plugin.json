@@ -1,6 +1,6 @@
 {
   "name": "agent-docs-tools",
-  "description": "Agent-First documentation tools — bootstrap agent docs, clean commits, learn/remember knowledge management",
+  "description": "Agent-First documentation tools — bootstrap agent docs, quality review, diff cleanup, clean commits, learn/remember knowledge management",
   "author": {
     "name": "Agent Docs Team"
   }

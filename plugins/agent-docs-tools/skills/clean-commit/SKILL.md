@@ -5,15 +5,12 @@ description: Use when about to commit code changes, when the user says "commit",
 
 # Clean Commit
 
-Run quality gates on the current diff, then commit with a message that explains business impact.
+Run the `quality-reviewer` skill on the current diff, then commit with a message that explains business impact.
 
 ## Workflow
 
 1. **Inspect changes** — `git status`, `git diff`, `git log --oneline -10`
-2. **Run quality gates** (only what applies to this repo):
-   - Linter: `{{LINT_COMMAND}}` <!-- TODO: e.g., `golangci-lint run ./...`, `npm run lint` -->
-   - Tests: `{{TEST_COMMAND}}` <!-- TODO: e.g., `go test ./...`, `npm test`, `pytest` -->
-   - Type-check (if separate from lint): `{{TYPECHECK_COMMAND}}` <!-- TODO -->
+2. **Run quality gates** — load `quality-reviewer` and follow its full procedure (three-pass review, diff hygiene, lint, tests, caller check). Its `Verdict` line tells you whether you may proceed.
 3. **Fix anything that fails.** Do NOT commit on failed gates unless the user explicitly says "skip <gate>" or "just commit".
 4. **Stage only intended files** — never `git add .` blindly. Inspect each path.
 5. **Compose the commit message** (see rules below).
@@ -42,9 +39,10 @@ Run quality gates on the current diff, then commit with a message that explains 
 
 ## Skip Flags
 
-User can skip gates explicitly:
-- `skip tests` → skip the test gate
-- `skip lint` → skip the linter gate
+User can skip gates explicitly. These map to the `quality-reviewer` gate names:
+- `skip review` → skip the three-pass review (Gate 2)
+- `skip lint` → skip the linter (Gate 4)
+- `skip tests` → skip the test gate (Gate 5)
 - `just commit` → stage + commit, no gates
 
 If the user says "just commit", still inspect the diff for secrets / debug prints before committing.
