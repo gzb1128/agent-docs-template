@@ -1,0 +1,4 @@
+interface:
+  display_name: "Loopfix"
+  short_description: "Autonomous fix-review loops for current work goals."
+  default_prompt: "Run loopfix on the current approved goal until it is ready for review or shipment."

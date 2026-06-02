@@ -1,0 +1,7 @@
+{
+  "name": "code-quality",
+  "description": "Code quality tools — quality review, clean commits, diff cleanup, autonomous fix-review loops",
+  "author": {
+    "name": "Agent Docs Team"
+  }
+}

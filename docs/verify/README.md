@@ -1,6 +1,6 @@
 # 技能验证流程（Skill Verification）
 
-本目录记录如何对 `plugins/agent-docs-tools/skills/` 下的每个技能执行
+本目录记录如何对 `plugins/agent-docs/skills/` 和 `plugins/code-quality/skills/` 下的每个技能执行
 RED → GREEN → REFACTOR 测试循环。流程严格遵循 `superpowers:writing-skills`
 铁律：**没有失败测试，不写技能**。
 
@@ -38,14 +38,14 @@ OpenCode 子代理只发现以下两个位置的技能：
 - `~/.config/opencode/skill/`（个人 superpowers 套件）
 - `~/.agents/skills/`（用户级别技能仓库）
 
-本仓库的技能位于 `plugins/agent-docs-tools/skills/<name>/`（Claude Code plugin
+本仓库的技能位于 `plugins/agent-docs/skills/<name>/` 和 `plugins/code-quality/skills/<name>/`（Claude Code plugin
 布局）。为了让 OpenCode 子代理能发现它们，**测试前必须建立 symlink**：
 
 ```bash
 make test-skills-link
 ```
 
-该命令会为 `plugins/agent-docs-tools/skills/` 下的每个技能在
+该命令会为两个 plugin 的 skills/ 下的每个技能在
 `~/.agents/skills/<name>` 创建符号链接。源始终是这个 repo 中的技能目录，所以
 你对 `SKILL.md` 的任何编辑都会被立刻测试到。
 
