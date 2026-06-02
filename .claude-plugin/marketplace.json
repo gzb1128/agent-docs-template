@@ -5,8 +5,8 @@
   },
   "plugins": [
     {
-      "name": "agent-docs-tools",
-      "description": "Agent-First documentation tools — bootstrap agent docs, clean commits, learn/remember knowledge management",
+      "name": "agent-docs",
+      "description": "Agent-First documentation tools — bootstrap agent docs, learn/remember knowledge management",
       "author": {
         "name": "Agent Docs Team"
       },
@@ -14,7 +14,21 @@
       "source": {
         "source": "git-subdir",
         "repo": "gzb1128/agent-docs-template",
-        "path": "plugins/agent-docs-tools"
+        "path": "plugins/agent-docs"
+      },
+      "homepage": "https://github.com/gzb1128/agent-docs-template"
+    },
+    {
+      "name": "code-quality",
+      "description": "Code quality tools — quality review, clean commits, diff cleanup, autonomous fix-review loops",
+      "author": {
+        "name": "Agent Docs Team"
+      },
+      "category": "productivity",
+      "source": {
+        "source": "git-subdir",
+        "repo": "gzb1128/agent-docs-template",
+        "path": "plugins/code-quality"
       },
       "homepage": "https://github.com/gzb1128/agent-docs-template"
     }

@@ -8,7 +8,7 @@ allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 
 > **Manual-trigger skill.** `disable-model-invocation: true` keeps the model from
 > invoking this workflow automatically mid-task. When installed from this plugin,
-> invoke it deliberately as `/agent-docs-tools:learn` at the end of a session.
+> invoke it deliberately as `/agent-docs:learn` at the end of a session.
 > Do not add hooks, background tasks, auto-trigger behavior, runtime storage,
 > vector databases, MCP integration, or external memory systems.
 
@@ -41,8 +41,8 @@ Do not write anything yet. First classify each candidate.
 |----------------|-------------|------|
 | `Hidden Knowledge` | Nearest relevant `AGENTS.md` under `## Hidden Knowledge` | Only for non-derivable hidden dependencies, misleading errors, workarounds, quirks, or critical ordering |
 | `Quick Reference` | Root `AGENTS.md` Quick Reference table | Build, test, lint, run, codegen, clean, or other common commands |
-| `Rule` | Report suggested destination only | Team convention or hard boundary; do not create or modify `docs/rules/` from `/agent-docs-tools:learn` |
-| `Doc` | Report suggested destination only | Longer design, troubleshoot, runbook, or library note; do not create or modify docs from `/agent-docs-tools:learn` |
+| `Rule` | Report suggested destination only | Team convention or hard boundary; do not create or modify `docs/rules/` from `/agent-docs:learn` |
+| `Doc` | Report suggested destination only | Longer design, troubleshoot, runbook, or library note; do not create or modify docs from `/agent-docs:learn` |
 | `Skip` | No write | Derivable, one-off, duplicated, stale, generic, or unverifiable |
 
 ## Hidden Knowledge candidates
@@ -131,7 +131,7 @@ Before editing any file, show all proposals in this format:
 
 ### Report-Only Suggestions
 
-1. `<candidate>` -> belongs in <suggested destination>, not handled by `/agent-docs-tools:learn`
+1. `<candidate>` -> belongs in <suggested destination>, not handled by `/agent-docs:learn`
 ````
 
 Do not skip the diff and approval step. Even if the user asks to apply quickly,
@@ -143,7 +143,7 @@ After approval:
 
 1. Apply only the proposals the user approved.
 2. Preserve existing `AGENTS.md` structure and keep additions concise.
-3. Do not perform general cleanup from `/agent-docs-tools:learn`; use `/agent-docs-tools:remember` for stale,
+3. Do not perform general cleanup from `/agent-docs:learn`; use `/agent-docs:remember` for stale,
    duplicated, or misplaced existing memory.
 4. Report what changed, where it changed, and which candidates were skipped.
 

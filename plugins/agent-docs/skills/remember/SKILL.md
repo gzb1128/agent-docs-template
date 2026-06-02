@@ -8,7 +8,7 @@ allowed-tools: [Read, Glob, Grep, Bash, Edit, Write]
 
 > **Manual-trigger skill.** `disable-model-invocation: true` keeps the model from
 > running memory audits automatically mid-task. When installed from this plugin,
-> invoke it deliberately as `/agent-docs-tools:remember` when you want to clean
+> invoke it deliberately as `/agent-docs:remember` when you want to clean
 > up. Do not add hooks, background tasks, auto-trigger behavior, runtime storage,
 > vector databases, MCP integration, or external memory systems.
 
@@ -18,10 +18,10 @@ the user has reviewed the proposals and explicitly approved the changes.
 
 ## What this does
 
-This is the complement to `/agent-docs-tools:learn`:
+This is the complement to `/agent-docs:learn`:
 
-- `/agent-docs-tools:learn` proposes verified memory additions from the current session.
-- `/agent-docs-tools:remember` audits existing `AGENTS.md` memory surfaces for staleness,
+- `/agent-docs:learn` proposes verified memory additions from the current session.
+- `/agent-docs:remember` audits existing `AGENTS.md` memory surfaces for staleness,
   duplication, misplacement, and low-signal content.
 
 ## Step 1: Gather memory layers
@@ -135,7 +135,7 @@ Output a structured report:
 ```
 
 If no `AGENTS.md` memory surfaces exist beyond placeholders, say so and suggest
-running `/agent-docs-tools:learn` at the end of a future session that discovers non-obvious
+running `/agent-docs:learn` at the end of a future session that discovers non-obvious
 knowledge.
 
 ## Step 7: User approval

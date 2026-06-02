@@ -1,6 +1,9 @@
 # agent-docs-template
 
-A Claude Code plugin (`agent-docs-tools`) that scaffolds **Agent-First documentation** into any repository, based on [OpenAI Harness Engineering](https://openai.com/index/harness-engineering/) practices.
+A collection of Claude Code plugins under the `agent-docs-plugins` marketplace:
+
+- **`agent-docs`** — scaffolds **Agent-First documentation** into any repository, based on [OpenAI Harness Engineering](https://openai.com/index/harness-engineering/) practices.
+- **`code-quality`** — code review, clean commits, diff cleanup, and autonomous fix-review loops.
 
 **Core idea:** Human at the helm. Agents execute. The repo is the system of record — knowledge is structured for agent readability with progressive disclosure.
 
@@ -10,28 +13,39 @@ A Claude Code plugin (`agent-docs-tools`) that scaffolds **Agent-First documenta
 # 1. Add this marketplace
 claude plugin marketplace add gzb1128/agent-docs-template
 
-# 2. Install the plugin
-claude plugin install agent-docs-tools@agent-docs-plugins
+# 2. Install the plugins you need
+claude plugin install agent-docs@agent-docs-plugins
+claude plugin install code-quality@agent-docs-plugins
 
 # 3. In your target repo, ask Claude:
-#    "bootstrap agent docs"
-#    The bootstrap-agent-docs skill takes over from there.
+#    "bootstrap agent docs"       → scaffold Agent-First docs
+#    "review my changes"          → quality review on local diff
+#    "commit this"                → gated commit with impact message
+#    "loopfix"                    → autonomous review-fix loop
 ```
 
-Updates land automatically — the plugin is pinned to git commit SHA, every push is a new version. Run `claude plugin update agent-docs-tools@agent-docs-plugins` (or wait for auto-update) to pull the latest.
+Updates land automatically — plugins are pinned to git commit SHA, every push is a new version. Run `claude plugin update <plugin>@agent-docs-plugins` (or wait for auto-update) to pull the latest.
 
-## What the plugin ships
+## Plugin: `agent-docs`
 
 | Skill | Type | Purpose |
 |---|---|---|
 | `bootstrap-agent-docs` | model-invoked | Scaffold `AGENTS.md`, `docs/_templates/`, `docs/rules/`, and per-category INDEX files into a target repo |
-| `clean-commit` | model-invoked | Run quality gates (lint/test/typecheck) before committing, with messages that explain WHY |
-| `learn` | manual skill (`/agent-docs-tools:learn`) | Persist non-obvious session insights to the right `AGENTS.md` (verified, approval-gated) |
-| `remember` | manual skill (`/agent-docs-tools:remember`) | Audit `AGENTS.md` knowledge for staleness, duplication, and misplacement |
+| `learn` | manual skill (`/agent-docs:learn`) | Persist non-obvious session insights to the right `AGENTS.md` (verified, approval-gated) |
+| `remember` | manual skill (`/agent-docs:remember`) | Audit `AGENTS.md` knowledge for staleness, duplication, and misplacement |
 
-The template payload that `bootstrap-agent-docs` rsyncs lives inside the plugin at `plugins/agent-docs-tools/templates/` and resolves at runtime via `${CLAUDE_PLUGIN_ROOT}/templates/`. No separate repo clone needed.
+The template payload that `bootstrap-agent-docs` rsyncs lives inside the plugin at `plugins/agent-docs/templates/` and resolves at runtime via `${CLAUDE_PLUGIN_ROOT}/templates/`. No separate repo clone needed.
 
-## What gets scaffolded
+## Plugin: `code-quality`
+
+| Skill | Type | Purpose |
+|---|---|---|
+| `quality-reviewer` | model-invoked | Structured quality pass on local changes: three-pass review, diff hygiene, lint, tests, caller check |
+| `clean-commit` | model-invoked | Run quality gates (via `quality-reviewer`) before committing, with messages that explain WHY |
+| `diff-cleanup` | model-invoked | Remove AI-generated bloat (slop comments, dead guards, redundant code) from a feature branch diff |
+| `loopfix` | model-invoked | Autonomous review-fix loop: reviewer subagent finds issues, main agent triages and fixes, repeat until clean |
+
+## What gets scaffolded (`agent-docs`)
 
 When you ask Claude to "bootstrap agent docs" in a target repo, the plugin creates:
 
@@ -72,7 +86,7 @@ your-repo/
 
 ## Why This Structure?
 
-Read [`openai-harness-engineering.md`](plugins/agent-docs-tools/templates/docs/rules/openai-harness-engineering.md) for the full rationale. The short version:
+Read [`openai-harness-engineering.md`](plugins/agent-docs/templates/docs/rules/openai-harness-engineering.md) for the full rationale. The short version:
 
 - **Context is scarce.** A 1000-line AGENTS.md crowds out the actual task. Keep it ~100 lines.
 - **All guidance becomes noise.** If everything is "important", nothing is. Be selective.
