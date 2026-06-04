@@ -1,5 +1,7 @@
 # agent-docs-template
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A collection of Claude Code plugins under the `agent-docs-plugins` marketplace:
 
 - **`agent-docs`** — scaffolds **Agent-First documentation** into any repository, based on [OpenAI Harness Engineering](https://openai.com/index/harness-engineering/) practices.
@@ -99,4 +101,4 @@ This repo is both the marketplace and the plugin source. See [AGENTS.md](AGENTS.
 
 ## License
 
-Use freely. Adapt to your project's needs.
+This project is licensed under the [MIT License](LICENSE).
