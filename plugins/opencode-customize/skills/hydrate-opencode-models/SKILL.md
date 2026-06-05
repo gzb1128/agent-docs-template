@@ -54,7 +54,9 @@ curl -s https://models.dev/api.json | jq --arg MODEL "glm-5.1" '
 '
 ```
 
-Pick the **canonical provider** (the model's creator/owner). Examples:
+Pick the **canonical provider** (the model's creator/owner). Use the returned `model_key` exactly as-is in Step 2 — the key casing is not always lowercase (e.g. `MiniMax-M2.7`).
+
+Examples:
 
 | Model | Canonical provider |
 |-------|--------------------|
@@ -135,7 +137,7 @@ cat /tmp/models-dev.json | jq '.minimax.models["MiniMax-M2.7"]'
 ## Common Mistakes
 
 - **Wrong provider**: Always use the canonical provider (model creator), not a reseller like `openrouter` or `novita-ai`, as they may have different model IDs or stale specs.
-- **Case sensitivity**: Models.dev keys are lowercase-hyphenated (`glm-5.1`, `kimi-k2.6`, `minimax-m2.7`), but the internal `name` field may differ (`GLM-5.1`, `Kimi K2.6`). Use the key for lookup.
+- **Case sensitivity**: Models.dev keys are **not** always lowercase — e.g. `glm-5.1`, `kimi-k2.6` are lowercase, but `MiniMax-M2.7` is mixed case. The Step 1 fuzzy lookup uses `ascii_downcase` to find the key, but Step 2 requires the **exact key** from Step 1's `model_key` field. Never guess the casing — always copy it from the lookup result.
 - **Missing `limit`**: This causes a crash (`maxOutputTokens must be >= 1`). Always include `limit.context` and `limit.output`.
 - **Forgetting `interleaved`**: GLM and Kimi models use `{ "field": "reasoning_content" }` for interleaved thinking. Without this, reasoning output may be lost.
 - **Skipping the security gate**: Never read opencode config without explicit user consent. API keys and tokens in config files are secrets.
