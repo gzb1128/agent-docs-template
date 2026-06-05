@@ -31,6 +31,20 @@
         "path": "plugins/code-quality"
       },
       "homepage": "https://github.com/gzb1128/agent-docs-template"
+    },
+    {
+      "name": "opencode-customize",
+      "description": "opencode configuration tools — hydrate model parameters from Models.dev catalog",
+      "author": {
+        "name": "Agent Docs Team"
+      },
+      "category": "productivity",
+      "source": {
+        "source": "git-subdir",
+        "repo": "gzb1128/agent-docs-template",
+        "path": "plugins/opencode-customize"
+      },
+      "homepage": "https://github.com/gzb1128/agent-docs-template"
     }
   ]
 }
