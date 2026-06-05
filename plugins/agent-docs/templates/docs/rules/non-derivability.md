@@ -1,4 +1,4 @@
-# Non-Derivability Principle (不可推导原则)
+# Non-Derivability Principle
 
 > **One-line version:** Only write down what cannot be derived from code, git history, or existing docs.
 

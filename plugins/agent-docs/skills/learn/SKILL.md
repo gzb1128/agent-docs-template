@@ -16,7 +16,7 @@ Review what happened in this session and produce verified, reviewable memory
 proposals for the appropriate `AGENTS.md` file. Do not edit files until the user
 has seen the proposed diff and explicitly approved it.
 
-## Non-Derivability Principle (不可推导原则)
+## Non-Derivability Principle
 
 **Only record information that CANNOT be derived from the codebase itself.**
 Before proposing any `Hidden Knowledge` entry, ask:

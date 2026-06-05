@@ -1,89 +1,89 @@
-# 记忆命令改进实施计划
+# Memory Commands Improvement Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 按照 `docs/design/2026-05-28-memory-commands-design.md` 改进 `plugins/agent-docs-tools/skills/learn/SKILL.md` 与 `plugins/agent-docs-tools/skills/remember/SKILL.md`。
+**Goal:** Improve `plugins/agent-docs/skills/learn/SKILL.md` and `plugins/agent-docs/skills/remember/SKILL.md` according to `docs/design/2026-05-28-memory-commands-design.md`.
 
-**Architecture:** 只修改两个手动触发命令体，不引入 agent 集成、hook、自动触发、运行时存储、向量数据库或外部记忆系统。`/learn` 负责会话候选记忆的分类、验证、diff 提案和确认后写入；`/remember` 负责 `AGENTS.md` 记忆表面的健康审计和确认后清理。
+**Architecture:** Modify only the two manually triggered command bodies. Do not add agent integration, hooks, auto-triggering, runtime storage, vector databases, or external memory systems. `/learn` classifies candidate session memory, verifies it, proposes a diff, and writes only after confirmation; `/remember` audits the health of `AGENTS.md` memory surfaces and cleans up only after confirmation.
 
 **Tech Stack:** Markdown command bodies, `AGENTS.md`, repository documentation conventions.
 
 ---
 
-### Task 1: 更新 `/learn` 命令
+### Task 1: Update `/learn` Command
 
 **Files:**
-- Modify: `plugins/agent-docs-tools/skills/learn/SKILL.md`
+- Modify: `plugins/agent-docs/skills/learn/SKILL.md`
 
-- [x] **Step 1: 保留手动触发边界**
+- [x] **Step 1: Preserve the manual trigger boundary**
 
-确认文件顶部仍说明该文件是 manual-trigger command，且没有建议自动加载、hook、后台任务或 agent runtime 集成。
+Confirm that the file still states it is a manual-trigger command and does not suggest auto-loading, hooks, background jobs, or agent runtime integration.
 
-- [x] **Step 2: 加入候选洞察分类**
+- [x] **Step 2: Add candidate insight classification**
 
-在不可推导原则之后加入分类表：`Hidden Knowledge`、`Quick Reference`、`Rule`、`Doc`、`Skip`。`Rule` 和 `Doc` 只能报告建议去向，不能由 `/learn` 自动创建或修改对应文档。
+Add a classification table after the non-derivability principle: `Hidden Knowledge`, `Quick Reference`, `Rule`, `Doc`, and `Skip`. `Rule` and `Doc` may only report suggested destinations; `/learn` must not auto-create or modify those documents.
 
-- [x] **Step 3: 强化写入前验证**
+- [x] **Step 3: Strengthen pre-write verification**
 
-把验证要求改成必须为每个保留候选项记录证据：路径存在、符号存在、行为确认、命令运行或无法验证的原因。无法验证的候选项必须跳过。
+Change verification requirements so every retained candidate records evidence: path exists, symbol exists, behavior confirmed, command ran, or reason verification was impossible. Unverifiable candidates must be skipped.
 
-- [x] **Step 4: 改为 diff-first approval**
+- [x] **Step 4: Switch to diff-first approval**
 
-在流程中要求先展示目标文件、目标 section、原因、验证证据和 diff，再请求用户确认。即使用户希望快速应用，也不能跳过 diff 和确认。
+Require the flow to show the target file, target section, rationale, verification evidence, and diff before asking for user confirmation. Even if the user asks for a fast apply, the diff and confirmation cannot be skipped.
 
-- [x] **Step 5: 收尾检查**
+- [x] **Step 5: Final check**
 
-确认 `/learn` 仍只写入 `AGENTS.md` 记忆表面，且不会鼓励把可推导代码结构写入 `Hidden Knowledge`。
+Confirm that `/learn` still only writes to `AGENTS.md` memory surfaces and does not encourage recording derivable code structure in `Hidden Knowledge`.
 
-### Task 2: 更新 `/remember` 命令
-
-**Files:**
-- Modify: `plugins/agent-docs-tools/skills/remember/SKILL.md`
-
-- [x] **Step 1: 保留报告优先边界**
-
-确认文件顶部和用户确认步骤仍明确：默认只输出报告，不经用户批准不编辑文件。
-
-- [x] **Step 2: 扩展审计范围**
-
-把审计范围从仅 `## Hidden Knowledge` 扩展为 `Quick Reference`、`Architecture`、`Key Patterns`、`Golden Rules`、`Hidden Knowledge`、sub-package `AGENTS.md`。
-
-- [x] **Step 3: 加入健康维度**
-
-增加 `Signal`、`Placement`、`Currency`、`Non-Derivability`、`Duplication`、`Actionability` 六个维度，用于统一评估每个问题。
-
-- [x] **Step 4: 更新报告格式**
-
-把输出格式升级为 `Memory Health Report`，包含 `Promotions`、`Deletions`、`Rewrites`、`Duplicates`、`Conflicts`、`No Action Needed`。
-
-- [x] **Step 5: 收尾检查**
-
-确认 `/remember` 不承诺自动删除、不自动合并冲突、不运行任何外部记忆系统。
-
-### Task 3: 验证和审查
+### Task 2: Update `/remember` Command
 
 **Files:**
-- Inspect: `plugins/agent-docs-tools/skills/learn/SKILL.md`
-- Inspect: `plugins/agent-docs-tools/skills/remember/SKILL.md`
+- Modify: `plugins/agent-docs/skills/remember/SKILL.md`
 
-- [x] **Step 1: 检查占位符**
+- [x] **Step 1: Preserve the report-first boundary**
 
-Run: `rg -n "TO[D]O|T[B]D|FIX[M]E|\\{\\{" plugins/agent-docs-tools/skills/learn/SKILL.md plugins/agent-docs-tools/skills/remember/SKILL.md`
+Confirm that the file header and user confirmation step still make this explicit: output a report by default; do not edit files without user approval.
+
+- [x] **Step 2: Expand audit scope**
+
+Expand the audit scope from only `## Hidden Knowledge` to `Quick Reference`, `Architecture`, `Key Patterns`, `Golden Rules`, `Hidden Knowledge`, and sub-package `AGENTS.md` files.
+
+- [x] **Step 3: Add health dimensions**
+
+Add six dimensions for consistent issue evaluation: `Signal`, `Placement`, `Currency`, `Non-Derivability`, `Duplication`, and `Actionability`.
+
+- [x] **Step 4: Update report format**
+
+Upgrade the output format to `Memory Health Report`, with `Promotions`, `Deletions`, `Rewrites`, `Duplicates`, `Conflicts`, and `No Action Needed`.
+
+- [x] **Step 5: Final check**
+
+Confirm that `/remember` does not promise automatic deletion, automatic conflict merging, or any external memory system.
+
+### Task 3: Verify and Review
+
+**Files:**
+- Inspect: `plugins/agent-docs/skills/learn/SKILL.md`
+- Inspect: `plugins/agent-docs/skills/remember/SKILL.md`
+
+- [x] **Step 1: Check placeholders**
+
+Run: `rg -n "TO[D]O|T[B]D|FIX[M]E|\{\{" plugins/agent-docs/skills/learn/SKILL.md plugins/agent-docs/skills/remember/SKILL.md`
 
 Expected: no output.
 
-- [x] **Step 2: 检查禁止的集成范围**
+- [x] **Step 2: Check prohibited integration scope**
 
-Run: `rg -n "vector|database|MCP|hook|background|auto-trigger|runtime storage|external memory" plugins/agent-docs-tools/skills/learn/SKILL.md plugins/agent-docs-tools/skills/remember/SKILL.md`
+Run: `rg -n "vector|database|MCP|hook|background|auto-trigger|runtime storage|external memory" plugins/agent-docs/skills/learn/SKILL.md plugins/agent-docs/skills/remember/SKILL.md`
 
 Expected: only prohibition text is acceptable; no instruction should add those systems.
 
-- [x] **Step 3: 检查 markdown whitespace**
+- [x] **Step 3: Check markdown whitespace**
 
-Run: `git diff --check -- plugins/agent-docs-tools/skills/learn/SKILL.md plugins/agent-docs-tools/skills/remember/SKILL.md`
+Run: `git diff --check -- plugins/agent-docs/skills/learn/SKILL.md plugins/agent-docs/skills/remember/SKILL.md`
 
 Expected: no output.
 
-- [x] **Step 4: 运行 loopfix reviewer**
+- [x] **Step 4: Run loopfix reviewer**
 
-Request a reviewer pass scoped to the two command files and the design. Fix in-scope findings and repeat until the latest pass has no current-goal findings.
+Request a reviewer pass scoped to the two command files and the design. Fix in-scope findings and repeat until the latest pass has no findings for the current goal.
