@@ -1,7 +1,7 @@
 {
   "name": "code-quality",
-  "description": "Code quality tools — quality review, clean commits, diff cleanup, autonomous fix-review loops",
+  "description": "Code quality tools — local quality review, clean commits, diff cleanup, and autonomous review-fix loops",
   "author": {
-    "name": "Agent Docs Team"
+    "name": "Skill Forge Team"
   }
 }

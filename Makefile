@@ -1,42 +1,44 @@
-# Makefile for agent-docs-template
+# Makefile for skill-forge
 #
-# 本仓库的技能位于 plugins/agent-docs/skills/<name>/ 和
-# plugins/code-quality/skills/<name>/，遵循 Claude Code 的 plugin 目录布局。
-# 但 OpenCode 子代理只从 ~/.agents/skills/ 发现技能。
+# Skills in this repo live in plugins/<plugin-name>/skills/<name>/, following
+# the Claude Code plugin directory layout.
+# OpenCode subagents only discover skills from ~/.agents/skills/.
 #
-# 为了在不复制文件的前提下让本仓库的技能被 OpenCode 子代理发现并测试，
-# 用 symlink 把它们桥接到 ~/.agents/skills/。详见 docs/verify/README.md。
+# To make this repo's skills discoverable by OpenCode subagents without
+# copying files, we bridge them via symlinks to ~/.agents/skills/.
+# See docs/verify/README.md for details.
 
-SKILLS_SRC_AGENT_DOCS   := $(CURDIR)/plugins/agent-docs/skills
-SKILLS_SRC_CODE_QUALITY := $(CURDIR)/plugins/code-quality/skills
+PLUGIN_DIRS := $(wildcard $(CURDIR)/plugins/*)
+SKILLS_SRC_DIRS := $(wildcard $(CURDIR)/plugins/*/skills)
 SKILLS_DST := $(HOME)/.agents/skills
-
-SKILL_NAMES_AGENT_DOCS   := $(notdir $(wildcard $(SKILLS_SRC_AGENT_DOCS)/*))
-SKILL_NAMES_CODE_QUALITY := $(notdir $(wildcard $(SKILLS_SRC_CODE_QUALITY)/*))
 
 .PHONY: help validate test-skills-link test-skills-unlink test-skills-status
 
 help:
 	@echo "Targets:"
-	@echo "  validate              run 'claude plugin validate' on marketplace + both plugins"
+	@echo "  validate              run 'claude plugin validate' on marketplace + all plugins"
 	@echo "  test-skills-link      symlink every skill into ~/.agents/skills/ (for GREEN tests)"
 	@echo "  test-skills-unlink    remove those symlinks"
 	@echo "  test-skills-status    show which symlinks currently exist"
 
 validate:
 	claude plugin validate .
-	claude plugin validate ./plugins/agent-docs
-	claude plugin validate ./plugins/code-quality
+	@for plugin in $(PLUGIN_DIRS); do \
+		if [ -d "$$plugin/.claude-plugin" ]; then \
+			claude plugin validate "$$plugin" || exit $$?; \
+		fi; \
+	done
 
-# 为两个 plugin 的 skills/<name>/ 在 ~/.agents/skills/<name>
-# 建立 symlink。源是 repo 中的目录，所以 SKILL.md 改动会立刻被测试到。
+# Create symlinks at ~/.agents/skills/<name> for each plugin's skills/<name>/.
+# The source is always the repo directory, so SKILL.md edits are immediately testable.
 #
-# 重要：opencode 父对话的 skills registry 在启动时构建。新建 symlink 后
-# 必须重启 opencode（或开新会话），子代理才能在 <available_skills> 中
-# 看到新加入的技能。详见 docs/verify/README.md 的"派发前完成 symlink"段落。
+# Important: opencode's parent session skills registry is built at startup.
+# After creating new symlinks, you must restart opencode (or start a new session)
+# before subagents can see the new skills in <available_skills>.
+# See docs/verify/README.md "Critical Timing Constraint" section.
 test-skills-link:
 	@mkdir -p $(SKILLS_DST)
-	@for src_dir in $(SKILLS_SRC_AGENT_DOCS) $(SKILLS_SRC_CODE_QUALITY); do \
+	@for src_dir in $(SKILLS_SRC_DIRS); do \
 		for name in $$(ls "$$src_dir" 2>/dev/null); do \
 			src="$$src_dir/$$name"; \
 			dst="$(SKILLS_DST)/$$name"; \
@@ -53,7 +55,7 @@ test-skills-link:
 	@echo "registry picks up the new entries before dispatching test subagents."
 
 test-skills-unlink:
-	@for src_dir in $(SKILLS_SRC_AGENT_DOCS) $(SKILLS_SRC_CODE_QUALITY); do \
+	@for src_dir in $(SKILLS_SRC_DIRS); do \
 		for name in $$(ls "$$src_dir" 2>/dev/null); do \
 			dst="$(SKILLS_DST)/$$name"; \
 			if [ -L "$$dst" ]; then \
@@ -63,7 +65,7 @@ test-skills-unlink:
 	done
 
 test-skills-status:
-	@for src_dir in $(SKILLS_SRC_AGENT_DOCS) $(SKILLS_SRC_CODE_QUALITY); do \
+	@for src_dir in $(SKILLS_SRC_DIRS); do \
 		for name in $$(ls "$$src_dir" 2>/dev/null); do \
 			dst="$(SKILLS_DST)/$$name"; \
 			if [ -L "$$dst" ]; then \
