@@ -157,8 +157,8 @@ Bootstrap complete. Next steps for you/the agent:
    /agent-docs:learn
    /agent-docs:remember
    If this repo was scaffolded without the plugin installed, install it first:
-   claude plugin marketplace add gzb1128/agent-docs-template
-   claude plugin install agent-docs@agent-docs-plugins
+   claude plugin marketplace add gzb1128/skill-forge
+   claude plugin install agent-docs@skill-forge
 3. If useful, write your first code map: docs/codemaps/<component>.md
    - Apply the non-derivability principle (docs/rules/non-derivability.md)
    - Use the "map, not encyclopedia" pattern (docs/rules/openai-harness-engineering.md)
