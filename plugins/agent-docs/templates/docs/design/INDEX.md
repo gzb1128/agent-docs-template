@@ -8,7 +8,7 @@ If you're looking for **how a design was executed**, see [../plans/INDEX.md](../
 
 ## Designs
 
-<!-- 最新设计放在最上方。 -->
+<!-- Put the newest design at the top. -->
 
 | Date | Document | Topic | When to Read |
 |------|----------|-------|--------------|

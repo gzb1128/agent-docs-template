@@ -6,7 +6,7 @@ Coding standards and best practices. Each rule has a **"When to Use"** trigger s
 
 | Rule | Description | When to Use |
 |------|-------------|-------------|
-| [Non-Derivability Principle (不可推导原则)](non-derivability.md) | Only write down what cannot be derived from code, git history, or existing docs | **Before writing ANY doc** — the universal filter |
+| [Non-Derivability Principle](non-derivability.md) | Only write down what cannot be derived from code, git history, or existing docs | **Before writing ANY doc** — the universal filter |
 | [Document Conventions](document-conventions.md) | Documentation tree, naming rules, when to add a sub-package `AGENTS.md` | Creating/refactoring any file under `docs/` |
 | [OpenAI Harness Engineering](openai-harness-engineering.md) | Agent-First engineering practices: progressive disclosure, documentation organization | Reviewing the overall doc philosophy; auditing codemaps / `AGENTS.md` files |
 

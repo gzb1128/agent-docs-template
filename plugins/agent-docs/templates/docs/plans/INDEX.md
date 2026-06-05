@@ -6,7 +6,7 @@ Plans often link to a design doc in [../design/](../design/), but that is not a 
 
 ## Plans
 
-<!-- 最新计划放在最上方。 -->
+<!-- Put the newest plan at the top. -->
 
 | Date | Document | Status | Linked Context |
 |------|----------|--------|----------------|

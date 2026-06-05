@@ -1,11 +1,12 @@
 # Makefile for skill-forge
 #
-# 本仓库的技能位于 plugins/<plugin-name>/skills/<name>/，遵循 Claude Code 的
-# plugin 目录布局。
-# 但 OpenCode 子代理只从 ~/.agents/skills/ 发现技能。
+# Skills in this repo live in plugins/<plugin-name>/skills/<name>/, following
+# the Claude Code plugin directory layout.
+# OpenCode subagents only discover skills from ~/.agents/skills/.
 #
-# 为了在不复制文件的前提下让本仓库的技能被 OpenCode 子代理发现并测试，
-# 用 symlink 把它们桥接到 ~/.agents/skills/。详见 docs/verify/README.md。
+# To make this repo's skills discoverable by OpenCode subagents without
+# copying files, we bridge them via symlinks to ~/.agents/skills/.
+# See docs/verify/README.md for details.
 
 PLUGIN_DIRS := $(wildcard $(CURDIR)/plugins/*)
 SKILLS_SRC_DIRS := $(wildcard $(CURDIR)/plugins/*/skills)
@@ -28,12 +29,13 @@ validate:
 		fi; \
 	done
 
-# 为每个 plugin 的 skills/<name>/ 在 ~/.agents/skills/<name>
-# 建立 symlink。源是 repo 中的目录，所以 SKILL.md 改动会立刻被测试到。
+# Create symlinks at ~/.agents/skills/<name> for each plugin's skills/<name>/.
+# The source is always the repo directory, so SKILL.md edits are immediately testable.
 #
-# 重要：opencode 父对话的 skills registry 在启动时构建。新建 symlink 后
-# 必须重启 opencode（或开新会话），子代理才能在 <available_skills> 中
-# 看到新加入的技能。详见 docs/verify/README.md 的"派发前完成 symlink"段落。
+# Important: opencode's parent session skills registry is built at startup.
+# After creating new symlinks, you must restart opencode (or start a new session)
+# before subagents can see the new skills in <available_skills>.
+# See docs/verify/README.md "Critical Timing Constraint" section.
 test-skills-link:
 	@mkdir -p $(SKILLS_DST)
 	@for src_dir in $(SKILLS_SRC_DIRS); do \
