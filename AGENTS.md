@@ -1,25 +1,31 @@
-# agent-docs-template
+# skill-forge
 
-> **Agent-First Engineering**: This repository follows [OpenAI Harness Engineering](plugins/agent-docs/templates/docs/rules/openai-harness-engineering.md) —
+> **Agent-First Engineering**: 本仓库遵循 [OpenAI Harness Engineering](plugins/agent-docs/templates/docs/rules/openai-harness-engineering.md) ——
 > "Human at the helm. Agents execute."
 
-This repo hosts two Claude Code plugins under the `agent-docs-plugins` marketplace:
+`skill-forge` 是一个 Claude Code plugin marketplace，用于锻造 agent 的运行环境。仓库同时承载 marketplace catalog、插件源码、技能验证流程和 Agent-First 文档模板。
 
-- **`agent-docs`** — Agent-First documentation scaffolding and knowledge management
-- **`code-quality`** — Code review, clean commits, diff cleanup, and autonomous fix-review loops
+## 当前插件
+
+| Plugin | Purpose | Skills |
+|---|---|---|
+| `agent-docs` | Agent-First 文档脚手架和知识管理 | `bootstrap-agent-docs`, `learn`, `remember` |
+| `code-quality` | 代码审查、提交门禁、diff 清理和自动修复循环 | `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
+| `opencode-customize` | OpenCode 配置定制，尤其是自定义 provider 的模型参数补全 | `hydrate-opencode-models` |
 
 ## What's here
 
 | Path | Purpose |
 |------|---------|
-| `.claude-plugin/marketplace.json` | Marketplace catalog (`agent-docs-plugins`) |
-| `plugins/agent-docs/` | Documentation plugin: `bootstrap-agent-docs`, `learn`, `remember` |
-| `plugins/agent-docs/templates/` | Template payload rsynced by the `bootstrap-agent-docs` skill |
-| `plugins/code-quality/` | Code quality plugin: `quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
-| `docs/design/`, `docs/plans/` | Design docs and plans for THIS repo's evolution |
-| `docs/verify/` | RED→GREEN→REFACTOR test process and scenario build scripts |
-| `Makefile` | `validate` + `test-skills-link/unlink/status` for skill verification |
-| `README.md` | User-facing install + usage guide |
+| `.claude-plugin/marketplace.json` | Marketplace catalog (`skill-forge`) |
+| `plugins/agent-docs/` | 文档插件：`bootstrap-agent-docs`, `learn`, `remember` |
+| `plugins/agent-docs/templates/` | `bootstrap-agent-docs` rsync 的模板载荷 |
+| `plugins/code-quality/` | 质量插件：`quality-reviewer`, `clean-commit`, `diff-cleanup`, `loopfix` |
+| `plugins/opencode-customize/` | OpenCode 定制插件：`hydrate-opencode-models` |
+| `docs/design/`, `docs/plans/` | 本仓库演进用的设计文档和实施计划 |
+| `docs/verify/` | RED→GREEN→REFACTOR 技能测试流程和场景构造脚本 |
+| `Makefile` | `validate` + `test-skills-link/unlink/status` 验证入口 |
+| `README.md` | 面向用户的安装和使用说明 |
 
 ## Quick Reference
 
@@ -30,70 +36,74 @@ This repo hosts two Claude Code plugins under the `agent-docs-plugins` marketpla
 | Check current symlink state | `make test-skills-status` |
 | Build a scenario for GREEN testing | `bash docs/verify/scenarios/<skill>/build-<letter>.sh` |
 | Remove test symlinks | `make test-skills-unlink` |
-| Smoke-test install (local path) | `claude plugin marketplace add $(pwd)` then `claude plugin install <plugin>@agent-docs-plugins` |
-| Inspect installed plugin | `claude plugin list --json \| jq '.[] \| select(.id\|contains("agent-docs"))'` |
+| Smoke-test install (local path) | `claude plugin marketplace add $(pwd)` then `claude plugin install <plugin>@skill-forge` |
+| Inspect installed plugins | `claude plugin list --json \| jq '.[] \| select(.id \| endswith("@skill-forge"))'` |
 
 ## Plugin Marketplace
 
-This repo IS the marketplace. The `.claude-plugin/marketplace.json` lists two plugins: `agent-docs` and `code-quality`.
+本仓库就是 marketplace。`.claude-plugin/marketplace.json` 列出 `agent-docs`、`code-quality` 和 `opencode-customize` 三个插件。
 
 ### Versioning: git commit SHA, not semver
 
-Both plugins **omit the `version` field** by design. Claude Code resolves the plugin's version to the git commit SHA — every push to this repo automatically becomes a new version. No manual bumps, no release tags.
+所有插件都**刻意省略 `version` 字段**。Claude Code 会把插件版本解析为 git commit SHA，因此每次 push 都会自动成为新版本，不需要维护 release tag 或 semver。
 
-> `claude plugin validate` warns `No version specified` and `No marketplace description provided` — both are **expected and intentional**, not errors. Validation passes.
+> `claude plugin validate` 可能提示 `No version specified`。这是预期行为，不是错误。
 
 ### Local verification workflow
 
-After modifying any file under `plugins/`, always verify before committing:
+修改 `plugins/` 下任何文件后，提交前必须验证：
 
 ```bash
 # 1. Validate the marketplace catalog
 claude plugin validate .
 
-# 2. Validate each plugin (checks plugin.json + SKILL.md frontmatter)
-claude plugin validate ./plugins/agent-docs
-claude plugin validate ./plugins/code-quality
+# 2. Validate every plugin
+for plugin in plugins/*; do
+  [ -d "$plugin/.claude-plugin" ] && claude plugin validate "$plugin"
+done
 
-# 3. Smoke-test install from the LOCAL working tree (tests uncommitted changes)
+# 3. Smoke-test install from the local working tree
 claude plugin marketplace add "$(pwd)"
-claude plugin install agent-docs@agent-docs-plugins
-claude plugin install code-quality@agent-docs-plugins
-claude plugin list --json | jq '.[] | select(.id | contains("agent-docs"))'
+claude plugin install agent-docs@skill-forge
+claude plugin install code-quality@skill-forge
+claude plugin install opencode-customize@skill-forge
+claude plugin list --json | jq '.[] | select(.id | endswith("@skill-forge"))'
 ```
 
-**Local path vs GitHub form:** `claude plugin marketplace add "$(pwd)"` reads from your working tree (good for pre-commit smoke tests). `claude plugin marketplace add gzb1128/agent-docs-template` fetches the latest pushed commit from GitHub (good for end-user simulation, won't see uncommitted changes).
+**Local path vs GitHub form:** `claude plugin marketplace add "$(pwd)"` 读取当前工作区，适合提交前 smoke test。`claude plugin marketplace add gzb1128/skill-forge` 会从 GitHub 拉取最新提交，适合模拟最终用户安装，无法看到未提交变更。
 
-`claude plugin validate` checks: JSON schema, duplicate plugin names, source path traversal, SKILL.md frontmatter parsing. It does **not** check hook safety, MCP reachability, or skill behavior — those need the upstream `scan-plugins` CI pipeline or manual testing.
+`claude plugin validate` 会检查 JSON schema、重复插件名、source path traversal、`SKILL.md` frontmatter。它不会检查 hook 安全性、MCP 可达性或技能行为，这些需要上游 `scan-plugins` CI 或手工验证。
 
 ### Editing a skill
 
-1. Edit `plugins/<plugin-name>/skills/<name>/SKILL.md` — the plugin is the only source
-2. Run `claude plugin validate ./plugins/<plugin-name>`
-3. Re-install locally and confirm new SHA: `claude plugin install <plugin-name>@agent-docs-plugins`
-4. Commit with a message explaining WHY the skill changed (business impact)
+1. 修改 `plugins/<plugin-name>/skills/<name>/SKILL.md`，插件目录是唯一源码来源。
+2. 运行 `claude plugin validate ./plugins/<plugin-name>`。
+3. 本地重装并确认新 SHA：`claude plugin install <plugin-name>@skill-forge`。
+4. 提交信息必须解释 WHY（业务影响），而不是只描述 WHAT（代码变化）。
 
 ### Editing the template payload
 
-1. Edit `plugins/agent-docs/templates/<path>` — that's the rsync source for `bootstrap-agent-docs`
-2. Re-run a bootstrap against a throwaway target dir to verify the change lands as intended:
+1. 修改 `plugins/agent-docs/templates/<path>`，这是 `bootstrap-agent-docs` 的 rsync 源。
+2. 在临时目标仓库中重新执行 bootstrap 等价流程，确认模板按预期落地：
    ```bash
    TMP=$(mktemp -d) && cd "$TMP" && git init -q
-   rsync -av --ignore-existing /path/to/agent-docs-template/plugins/agent-docs/templates/ ./
-   git status   # inspect what landed
+   rsync -av --ignore-existing /path/to/skill-forge/plugins/agent-docs/templates/ ./
+   git status
    ```
-3. Commit
+3. 提交变更。
 
 ## Hidden Knowledge
 
-- **`bootstrap-agent-docs` resolves templates from `${CLAUDE_PLUGIN_ROOT}/templates/`** — that env var is set automatically by Claude Code when the plugin is enabled. Do NOT reference templates by repo-relative paths; the plugin is installed into `~/.claude/plugins/cache/...` and cannot see this repo's working tree.
-- **Plugin install copies into cache, paths outside `plugins/<name>/` are invisible** — never write a skill that does `../../something`; pack everything the skill needs into its plugin directory.
-- **No `version` field is intentional** — adding one pins the plugin and breaks the "every push is a new version" guarantee.
+- **`bootstrap-agent-docs` 通过 `${CLAUDE_PLUGIN_ROOT}/templates/` 定位模板**。该环境变量由 Claude Code 在插件启用时自动设置。不要在技能中引用本仓库的相对路径；插件会安装到 `~/.claude/plugins/cache/...`，运行时看不到当前工作区。
+- **插件安装只复制插件目录内的内容**。`plugins/<name>/` 外部路径对已安装插件不可见，不要在技能中写 `../../something`；需要的资源必须打包进对应插件目录。
+- **省略 `version` 是刻意设计**。添加固定 version 会破坏“每次 push 都是新版本”的 SHA 版本策略。
+- **Marketplace source 使用 `git-subdir.url` 字段**。当前 Claude Code schema 要求 `git-subdir` source 使用 `url`，不是旧版 `repo` 字段。
 
 ## Development Workflow
 
-1. Edit under `plugins/agent-docs/` or `plugins/code-quality/` (skills or templates)
-2. Run `claude plugin validate .` and `claude plugin validate ./plugins/<plugin-name>`
-3. Smoke-test install locally (see Local verification workflow above)
-4. Commit with a message that explains WHY (business impact), not WHAT (code change)
-5. Push — every push is a new plugin version (SHA-based)
+1. 修改 `plugins/<plugin-name>/` 下的技能、模板或插件元数据。
+2. 运行 `make validate`。
+3. 如涉及技能行为，运行 `make test-skills-link` 并重启 opencode 后执行对应场景验证。
+4. 本地 smoke-test install（见 Local verification workflow）。
+5. 提交时使用解释 WHY 的英文提交信息。
+6. Push 后，新的 git SHA 自动成为插件版本。
