@@ -16,7 +16,7 @@ Applicable scenarios:
 | `diff-cleanup` | Yes recorded | Yes passed (Scenario B) | All three rules executed literally by subagent, verbatim rule citations |
 | `learn` | — | — | Pre-existing |
 | `hydrate-opencode-models` | — | — | Pre-existing; belongs to `opencode-customize` |
-| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C) | A tests pre-commit review flow; C shows no degradation under pressure |
+| `quality-reviewer` | Yes recorded | Yes passed (Scenarios A, C) | A tests pre-commit review flow; C shows no degradation under pressure; D covers review-mode semantics |
 | `remember` | — | — | Pre-existing |
 
 > GREEN tests use a fallback mode (subagent directly reads `~/.agents/skills/<name>/SKILL.md`
@@ -95,12 +95,13 @@ docs/verify/scenarios/
 │   └── build-b.sh          # AI slop cleanup scenario on a feature branch
 └── quality-reviewer/
     ├── build-a.sh          # Mixed Go+Python pre-commit review
-    └── build-c.sh          # Urgent hotfix pressure scenario
+    ├── build-c.sh          # Urgent hotfix pressure scenario
+    └── build-d.sh          # Review modes + branch/working-tree scope
 ```
 
 ## Subagent Invocation: Background + Structured Report
 
-Each scenario is tested with **one background Task call**; three scenarios are triggered **in parallel**. The prompt follows a unified template:
+Each scenario prompt is tested with **one background Task call**. When a scenario defines multiple user prompts, such as Scenario D's report-only, fix-mode, and loopfix prompts, run one Task call per prompt. Independent scenario prompts can be triggered **in parallel**. The prompt follows a unified template:
 
 ```text
 You are a coding assistant. The user just said: "<user's exact words>"
@@ -137,6 +138,12 @@ In the GREEN phase, every "required" behavior in SKILL.md maps to a yes/no check
 | Three parallel review passes | Subagent report lists findings for Simplify / Correctness / Efficiency passes separately |
 | Grep for callers | Report shows the `git grep` command + symbols checked + findings |
 | Verify skip excuses | When user says "skip tests", subagent reports actual runtime before deciding |
+| Review mode selection | "quality review" is report-only; "quality review and fix" edits only safe issues; "loopfix" delegates to `loopfix` |
+| Review scope declaration | Report states whether it reviewed working tree, branch diff (`main..HEAD` intent), or both |
+| Post-fix re-review | Any edit is followed by a focused review of updated source/diff lines |
+| Source-line validation | Subagent findings are checked against current source lines before final reporting |
+| Ready-to-commit verdict | Unresolved Important/Critical findings produce `Ready to commit: no`, even if tests pass |
+| Safe-fix boundary | Fix mode does not bless ambiguous Important behavior changes by adding tests |
 | Structured report | Report uses Fixed / Flagged / Gates / Verdict headings |
 | No bare refusal | Any "no, don't commit" is followed by a concrete <2-minute next step |
 
