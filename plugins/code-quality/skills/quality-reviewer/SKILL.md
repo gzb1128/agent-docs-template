@@ -1,17 +1,52 @@
 ---
 name: quality-reviewer
-description: Use when local code changes need a quality pass before commit, before opening a PR, or before claiming work is complete. Triggers on "review my changes", "quality check", "run quality gates", "ready to commit", "check before merge". Do NOT use for remote MR/PR review.
+description: Use when local code changes need a quality pass before commit, before opening a PR, or before claiming work is complete. Triggers on "review", "quality review", "quality review and fix", "fix review findings", "ready to commit", "check before merge". Do NOT use for remote MR/PR review.
 ---
 
 # Quality Reviewer
 
-Run a structured quality pass on local changes. Do not commit. Fix safe in-scope issues, flag the rest, then report.
+Run a structured quality pass on local changes. Do not commit. Default to report-only unless the user explicitly asks to fix.
 
 You will naturally inspect the diff, detect the toolchain (`go.mod`, `package.json`, `pyproject.toml`, `Cargo.toml`, `Makefile`), and decide what to lint and test. The rules below address what baseline testing showed agents skip.
 
-## Three required behaviors
+## Review modes
 
-### 1. Run the review in three independent passes — not one linear scan
+| User wording | Mode | File edits allowed? |
+|---|---|---|
+| "quality review", "review", "check my changes", "ready to commit" | **Report-only** | No |
+| "quality review and fix", "fix review findings", "fix safe issues" | **Fix safe issues** | Yes, for safe in-scope fixes only |
+| "loopfix", "review-fix-review loop", "keep fixing" | **Loopfix** | Yes, through the `loopfix` skill |
+
+Report-only means inspect, run gates, and report findings without modifying files. If a safe fix is obvious, list it under `Flagged (not fixed)` and say it can be applied if the user wants.
+
+Safe fixes are mechanical, localized, and either behavior-preserving or explicitly required by the user, `AGENTS.md`, a design doc, or an existing test expectation. Do not resolve ambiguous behavior, authorization, data-loss, API-contract, migration, security, or product findings by guessing intent, changing semantics, or adding tests that merely bless the new behavior.
+
+If the user did not explicitly ask to fix, do not edit files. If intent is ambiguous, ask for confirmation before any edit.
+
+Loopfix is not a bounded quality-review pass. When the user asks for loopfix, load the `loopfix` skill and follow its review-fix-review loop.
+
+## Required behaviors
+
+### 1. Declare review mode and review scope before reviewing
+
+Before reviewing findings, inspect repository state enough to decide and state:
+
+| Item | How to decide |
+|---|---|
+| **Mode** | Report-only / Fix safe issues / Loopfix, from the table above |
+| **Scope** | Working tree, branch diff, or both |
+
+Scope rules:
+
+| Local state | Review this |
+|---|---|
+| Uncommitted changes only | Working tree diff: `git diff`, `git diff --cached`, and untracked files from `git status --short` |
+| Feature-branch commits only | Branch diff: `git diff <base>...HEAD` (`main..HEAD` intent) |
+| Both committed branch changes and uncommitted changes | Both; label findings as branch or working-tree |
+
+Resolve `<base>` with `git merge-base HEAD origin/main`, `origin/master`, `main`, or `master`, using the first one that exists. If the user explicitly limits scope, honor that scope and say so in the report.
+
+### 2. Run the review in three independent passes - not one linear scan
 
 Baseline testing showed a single-pass review misses correctness issues that a focused pass would catch. Run three reviews against the diff, each with one question only:
 
@@ -23,7 +58,7 @@ Baseline testing showed a single-pass review misses correctness issues that a fo
 
 If the Task tool is available, dispatch the three passes in parallel as subagents. Otherwise do them inline as three separate read-throughs of the diff with the question above held in mind. **Do not collapse into one pass.**
 
-### 2. Grep for callers of changed public symbols
+### 3. Grep for callers of changed public symbols
 
 Before claiming the diff is safe, for each public function/method/exported symbol whose **signature, return shape, or error contract changed**:
 
@@ -33,7 +68,7 @@ git grep -n '<symbol>' -- ':!vendor' ':!node_modules'
 
 Baseline testing: agents flagged correctness risks ("might break callers") without ever checking whether callers exist. Either the risk is real (callers must change) or it isn't (no callers). Find out which.
 
-### 3. Verify "skip" claims before honoring them
+### 4. Verify "skip" claims before honoring them
 
 The user can skip gates explicitly. But verify the skip is justified before complying.
 
@@ -43,16 +78,43 @@ The user can skip gates explicitly. But verify the skip is justified before comp
 | "skip lint" | Honor it. Lint is taste; tests are correctness. |
 | "production is down, just commit" | Refusing to commit is incomplete. Pair every refusal with a concrete next step the user can take in <2 minutes (revert SHA, minimal diff, what bug to confirm). |
 
+### 5. Validate findings against current source before reporting
+
+Reviewer subagents are advisors, not ground truth. Before finalizing any finding from a subagent or earlier pass:
+
+1. Open the current source lines or current diff hunk.
+2. Confirm the issue still exists at the reported location.
+3. Drop stale findings, false positives, and findings made obsolete by later edits.
+
+Do not paste subagent findings into the final report without this source-line check.
+
+### 6. Re-review after any fix
+
+If fix mode is active and you edit files, run a focused re-review after the edit before reporting success:
+
+1. Re-read the updated diff/source lines touched by the fix.
+2. Check whether the fix created a new correctness, simplification, or efficiency issue.
+3. Re-run the smallest relevant lint/test gate if behavior, syntax, imports, or contracts changed.
+
+This applies even for one safe fix. It is a focused post-fix review, not a full loopfix cycle unless the user asked for loopfix.
+
+### 7. Important findings block ready-to-commit verdicts
+
+Tests passing is not enough. If any unresolved `Critical` or `Important` finding remains, `Ready to commit` must be `no`. An Important finding is resolved only by a safe fix with clear intent evidence, not by adding tests that bless ambiguous behavior. Use `yes` only when required gates pass and no unresolved Critical/Important findings remain. Use `yes-after-flags-resolved` only for unresolved Minor findings or explicitly accepted non-blocking follow-ups.
+
 ## Standard procedure
 
-1. **Scope the diff.** `git status`, `git diff --stat`, `git diff`, `git diff --cached`. If empty, say so and stop.
-2. **Detect toolchain.** Probe project files. If `AGENTS.md` declares lint/test commands, prefer those.
-3. **Three-pass review** (rule 1). Apply fixes that are clearly correct and in scope. Flag the rest.
-4. **Diff hygiene.** `git diff --check` for whitespace/conflict markers.
-5. **Lint.** Run the detected linter on changed paths. If the linter is genuinely unavailable, say so explicitly — do not silently skip. Try one alternative (e.g., `go vet`/`gofmt` if `golangci-lint` missing).
-6. **Tests.** Run the focused test command for affected modules. Use a writable cache if the default is blocked. If no tests exist for the changed code, say so — that is itself a finding.
-7. **Caller check** (rule 2) for any changed public symbol.
-8. **Report** in the structure below. Do not freeform-narrate.
+1. **Select mode and scope** (rule 1). If mode is Loopfix, load `loopfix` and stop this bounded procedure.
+2. **Scope the diff.** `git status`, `git diff --stat`, `git diff`, `git diff --cached`, untracked files from `git status --short`, and branch diff when scope includes branch changes. If empty, say so and stop.
+3. **Detect toolchain.** Probe project files. If `AGENTS.md` declares lint/test commands, prefer those.
+4. **Three-pass review** (rule 2). In report-only mode, do not edit. In fix mode, apply only safe in-scope fixes and flag the rest.
+5. **Post-fix re-review** (rule 6) if any file was edited.
+6. **Diff hygiene.** `git diff --check` for whitespace/conflict markers.
+7. **Lint.** Run the detected linter on changed paths. If the linter is genuinely unavailable, say so explicitly - do not silently skip. Try one alternative (e.g., `go vet`/`gofmt` if `golangci-lint` missing).
+8. **Tests.** Run the focused test command for affected modules. Use a writable cache if the default is blocked. If no tests exist for the changed code, say so - that is itself a finding.
+9. **Caller check** (rule 3) for any changed public symbol.
+10. **Validate findings** (rule 5) against current source lines.
+11. **Report** in the structure below. Do not freeform-narrate.
 
 ## Report format (use these headings)
 
@@ -64,11 +126,15 @@ The user can skip gates explicitly. But verify the skip is justified before comp
 - <file>:<line> — issue, severity (Critical/Important/Minor), why not auto-fixed
 
 ### Gates
+- Mode: <report-only / fix safe issues / loopfix>
+- Scope: <working tree / branch diff / both> via <commands>
 - Three-pass review: <pass/issues found>
+- Post-fix re-review: <not needed / pass / findings>
 - Diff hygiene: <pass/fail>
 - Lint: <command run> → <pass/fail/unavailable>
 - Tests: <command run> → <pass/fail/none-exist>
 - Caller check: <symbols checked> → <findings>
+- Finding validation: <source lines checked / stale findings dropped>
 
 ### Verdict
 Ready to commit: <yes / no / yes-after-flags-resolved>
@@ -78,6 +144,9 @@ If no: one concrete next step the user can take in <2 minutes.
 ## Never
 
 - Skip a gate silently. If a tool is unavailable, name it and say so.
+- Edit files in report-only mode or before explicit confirmation to fix.
 - Refuse to commit without offering a concrete <2-minute next step.
-- Argue with sub-pass output in the final report. Apply real findings, drop false positives, move on.
+- Report sub-pass or subagent output without checking it against current source lines.
+- Treat tests that bless ambiguous behavior as a safe fix for an Important finding.
 - Treat "I'm tired" / "it's urgent" as permission to skip gates. The user must explicitly name the gate.
+- Mark `Ready to commit: yes` when unresolved Critical or Important findings remain.
